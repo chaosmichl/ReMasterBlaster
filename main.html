@@ -1,0 +1,209 @@
+<html>
+<head>
+    <script type="text/javascript" src="crafty.js"></script>
+    <title>My Crafty Game</title>
+    <style>
+	@font-face { font-family: "Amiga"; src: url('amiga4ever.ttf') format("truetype");}
+    body, html { margin:0; padding: 0; overflow:hidden;font-family: "Amiga"; font-size:1.0em; text-transform: uppercase;}
+    #cr-stage {border:2px solid black; margin:5px auto; color:white }
+	#myCanvas {margin: 5px auto; height:480px; width:608px; border:2px solid black; background: yellow; position:relative;display:block;}
+    </style>
+</head>
+<body>
+<script type="text/javascript" src="crafty.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="sprites.js"></script>
+	<script src="jquery-1.7.1.min.js"></script>
+	
+	<div id = "myCanvas">
+		<canvas id="canv" width="608" height="480"></canvas>
+	</div>
+	<script>
+		window.onload = function () {
+			//start crafty
+			var size_x=608;
+			var size_y=480;
+			var scene="";
+			var playerObj=[];
+			var config = 
+			{
+				"menu":[
+					{text:"WINS NEEDED",value:3,min:3,max:9},
+					{text:"PLAYERS",value:2,min:2,max:5},
+					{text:"SHOP",value:"ON"},
+					{text:"SHRINKING",value:"OFF"},
+					{text:"FASTIGNITION",value:"ON"},
+					{text:"STARTMONEY",value:"OFF"},
+					{text:"NORMALLEVEL",value:"YES"},
+					{text:"GAMBLING",value:"YES"}
+				],
+				"player":[
+					{name:"POLICEMAN",taken:false,sx:0,sy:0,sw:32,sh:44},
+					{name:"DUKE",taken:false,sx:0,sy:132,sw:32,sh:44},
+					{name:"DETECTIVE",taken:false,sx:0,sy:264,sw:32,sh:44},
+					{name:"GREEN",taken:false,sx:0,sy:396,sw:32,sh:44},
+					{name:"CHINESE",taken:false,sx:0,sy:528,sw:32,sh:44},
+					{name:"MICHA",taken:false,sx:0,sy:660,sw:32,sh:44}
+				],
+				
+			};
+			var img=new Image();
+			img.src="sprite_players.png";
+			// 		
+			// 		var startScreen=new Image();
+			// 		startScreen.src="logo.png";
+			// 		
+			// 		var creditsScreen=new Image();
+			// 		creditsScreen.src="credits.png";
+
+			var active_position=0;
+			var canv = document.getElementById ("canv");
+			var ctx = canv.getContext ("2d");
+			ctx.font = "18px Amiga";
+			
+			function toggle(value){
+				if (value=='YES')
+				{
+					value='NO';
+				}else if(value=='NO')
+				{
+					value='YES';
+				}else if(value=='ON')
+				{
+					value='OFF';
+				}
+				else if(value=='OFF')
+				{
+					value='ON';
+				}
+				return value;
+			}
+			
+			function draw(x)
+			{
+				scene=x;
+				// if (scene === "start")
+				// 				{
+				// 					ctx.drawImage(startScreen,0,0,0,0)
+				// 				}
+				if (scene ==="menu"){
+					var y_zeile=1;
+					ctx.fillStyle = "brown";
+					ctx.clearRect (0, 0, canv.width, canv.height);
+					
+					for(var i=0;i<config.menu.length; i++)
+					{
+						if (y_zeile == 1)
+						{
+							ctx.fillText ("MAIN MENU", 200, 35*y_zeile);
+							y_zeile++;
+							ctx.fillText ("---------", 200, 35*y_zeile);			
+							y_zeile++;
+						}
+						
+						if (active_position===i) 
+						{
+							ctx.fillStyle = "red";
+							ctx.fillText (" > ", 70, 35*y_zeile);
+						};
+						ctx.fillStyle = "brown";
+						ctx.fillText (config.menu[i].text, 120, 35*y_zeile); 	
+						ctx.fillText (": " + config.menu[i].value, 380, 35*y_zeile); 
+						y_zeile++;
+					}
+				}
+				if (scene ==="hello")
+				{
+					ctx.fillStyle = "brown";
+					ctx.clearRect (0, 0, canv.width, canv.height);
+					ctx.fillText ("---------", 200, 35);
+					ctx.drawImage(img,0,660,32,44,50,50,32,44);
+				}
+			};
+			
+			$(document).keydown(function(event){
+				if (scene==="menu")
+				{
+					if (event.which == 37) { //left
+						if (active_position > 1)
+						{
+							config.menu[active_position].value = toggle(config.menu[active_position].value);
+						}
+						else
+						{
+							if (config.menu[active_position].value > config.menu[active_position].min)
+							{
+								config.menu[active_position].value--;
+							}
+							else
+							{
+								config.menu[active_position].value = config.menu[active_position].max;
+							}
+						}
+						draw("menu");
+					}
+					
+					if (event.which == 39) { //right
+						if (active_position > 1)
+						{
+							config.menu[active_position].value = toggle(config.menu[active_position].value);
+						}
+						else
+						{
+							if (config.menu[active_position].value < config.menu[active_position].max)
+							{
+								config.menu[active_position].value++;
+							}
+							else
+							{
+								config.menu[active_position].value = config.menu[active_position].min;
+							}
+						}
+						draw("menu");
+					};
+					if (event.which == 38) { //up
+						if (active_position >0)
+						{
+							active_position--;
+						}
+						draw("menu");
+					};
+					if (event.which == 40) { //down
+						if (active_position <config.menu.length-1)
+						{
+							active_position++;
+						}
+						draw("menu");
+					};
+					if (event.which == 13) { //enter
+						
+						draw("hello");
+					};
+				}
+				if (scene === "hello")
+				{
+					if (event.which == 13) { //enter
+						
+						playerObj[0]={username:"DUKE",controls:{left:65,right:68,up:87,down:83,bomb:32},money:0,maxbomben:10,feuerrange:2,speed:1.7,invinsible:false, wins:0, money: 0};
+						
+						playerObj[1]={username:"CHINESE",controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxbomben:1,feuerrange:2,speed:1.7,invinsible:false, wins:0, money:0};
+						
+						scene="game";
+						
+						$("#myCanvas").css("display","none");
+						
+						startGame(playerObj);
+					
+						/*playerObj=new Array(config.menu[1].value);
+						for (var i=0; i<playerObj; i++)
+						{
+							playerObj[i]={username:"",steuerung:"",money:0,maxbomben:1,feuerrange:2,speed:1.5,invinsible:false};
+						}*/
+					};
+				}
+			});
+			draw("menu");
+		}
+	</script>
+</body>
+</html>
