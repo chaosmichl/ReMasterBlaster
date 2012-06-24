@@ -1,4 +1,4 @@
-window.onload = function() {
+function startGame(playerObj) {
 	//start crafty
 	Crafty.init(608, 480);
 	
@@ -7,7 +7,7 @@ window.onload = function() {
 	 */
 	loadSprites("environment");
 	loadSprites("players");
-	
+		
 	/**
 	 * initialize the arrays, where bricks, goodys and entitiys shall be saved
 	 */
@@ -37,16 +37,16 @@ window.onload = function() {
 	var ENTER = 13;
 	
 	var string = "";
-	var MAX_PLAYERS = 2;
-	var PLAYERS_ALIVE = 2;
-	var PLAYER_1 = "MICHA";
-	var PLAYER_2 = "DETECTIVE";
+	var MAX_PLAYERS = playerObj.length;
+	var PLAYERS_ALIVE = playerObj.length;
+	var PLAYER_1 = playerObj[0].username;
+	var PLAYER_2 = playerObj[1].username;
 	var players = new Array(5);
 	for (var i=0; i < players.length; i++) {
 		players[i] = undefined;
 	};
 	
-	var ranking = new Array(5);
+	var ranking = new Array(playerObj.length);
 	for (var i=1; i <= MAX_PLAYERS; i++) {
 		ranking[i] = 0;
 	};
@@ -57,6 +57,9 @@ window.onload = function() {
 			for (var i=0; i < players.length; i++) {
 				if(players[i] != undefined){
 					console.log("Winner: " + players[i].PLAYER);
+					playerObj[i].wins++;
+					console.log(playerObj[i].username);
+					//gameFinished(playerObj);
 				} else {
 					help = help +1;
 				}
@@ -225,6 +228,10 @@ window.onload = function() {
 				self.addComponent("Invincible");
 				self.setInvincibleAnimation(self.PLAYER);
 				break;
+			case 17: //Money
+				brick_array[x][y] = 0;
+				goody_array[x][y].trigger("explode");	
+				self.money +=1 ;
 			default:
 				break;
 		}
@@ -520,7 +527,7 @@ window.onload = function() {
 				})
 				.delay(function() {
 					if(Crafty.randRange(0, 50) > 25){
-						switch (/*parseInt(getRandom(6))*/3) {
+						switch (/*parseInt(getRandom(6))*/7) {
 							case 0:
 								generateGoody("speed_up", x, y, 10);
 								break;
@@ -542,6 +549,9 @@ window.onload = function() {
 							case 6: 
 								generateGoody("invincible", x, y, 16);
 								break;
+							case 7: 
+								generateGoody("money", x, y, 17);
+								break;	
 							default:
 								break;
 						}
@@ -568,21 +578,25 @@ window.onload = function() {
 			bombsPlanted: 0,
 			PLAYER: "",
 			PLAYER_NUMBER: 1,
-			CustomControlsPlayer: function(speed, maxBombs, PLAYER, L, R, U, D, B) {
+			money: 0, 
+			CustomControlsPlayer: function(playerObject) {
 				setReference0(this);
-				if(speed) this.speed = speed;
-				if(maxBombs) this.maxBombs = maxBombs;
-				if(PLAYER) this.PLAYER = PLAYER;
-			
-				var costumKeys = {left: 0, right: 0, up: 0, down: 0};
-				if( L && R && U && D && B){
-					costumKeys.left = L;
-					costumKeys.right = R;
-					costumKeys.up = U;
-					costumKeys.down = D;
-					costumKeys.bomb = B;
-				}
 				
+				if(playerObject) {
+					this.speed = playerObject.speed;
+					this.maxBombs = playerObject.maxbomben;
+					var PLAYER = playerObject.username;
+					this.PLAYER = PLAYER;
+					this.money = playerObject.money
+				}
+
+				var costumKeys = {left: 0, right: 0, up: 0, down: 0};
+				costumKeys.left = playerObject.controls.left;
+				costumKeys.right = playerObject.controls.right;
+				costumKeys.up = playerObject.controls.up;
+				costumKeys.down = playerObject.controls.down;
+				costumKeys.bomb = playerObject.controls.bomb;
+
 				var move = this.__move;
 				var saveMove = this.__saveMove;
 				var bombset = this._bombset;
@@ -666,6 +680,7 @@ window.onload = function() {
 						var yGrid = yRelocator(this.y)+12;
 						if(!this.timeFuze){
 							if(this.bombsPlanted < this.maxBombs){
+								console.log(this.money);
 								if(!(brick_array[xGrid/32][yGrid/32] == 5)){
 									brick_array[xGrid/32][yGrid/32] = 5;
 									this.bombsPlanted += 1;									
@@ -1055,9 +1070,9 @@ window.onload = function() {
 		//create our player entity with some premade components
 	
 		
-		var player1 = Crafty.e("2D, DOM,"+ PLAYER_1 +", CustomControls, animate, explodable, Normal1")
+		var player1 = Crafty.e("2D, DOM,"+ playerObj[0].username +", CustomControls, animate, explodable, Normal1")
 			.attr({x: 32, y: 32-12, z: 10})
-			.CustomControlsPlayer(1.7, 10, PLAYER_1, A, D, W, S, SPACE)
+			.CustomControlsPlayer(playerObj[0])
 			.bind("explode", function() {
 				if(this.timeFuze){
 					this.detonateTriggeredBomb();
@@ -1071,7 +1086,7 @@ window.onload = function() {
 			
 		var player2 = Crafty.e("2D, DOM,"+ PLAYER_2 +", CustomControls2, animate, explodable, Normal1")
 			.attr({x: 32*17, y: 32*13-12, z: 10})
-			.CustomControlsPlayer(1.7, 10, PLAYER_2, LA, RA, UA, DA, ENTER)
+			.CustomControlsPlayer(playerObj[1].speed, playerObj[1].maxbomben, playerObj[1].username,  playerObj[1].controls.left, playerObj[1].controls.right, playerObj[1].controls.up, playerObj[1].controls.down, playerObj[1].controls.bomb)
 			.bind("explode", function() {
 				if(this.timeFuze){
 					this.detonateTriggeredBomb();
@@ -1090,7 +1105,6 @@ window.onload = function() {
 		function setReference1(self){
 			players[1] = self;
 		};
-		
 		
 		$(document).keydown(function(event){
  	 		for (var i=0; i < players.length; i++) {
