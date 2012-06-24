@@ -18,7 +18,9 @@ function loadSprites(which){
 			disease: [4, 5],
 			invincible: [0, 6],
 			death_skull: [0, 7],
-		    empty: [0, 5]
+			money: [1, 7],
+			trophy: [2, 7],
+		    empty: [0, 8]
 		});
 	}
 	
