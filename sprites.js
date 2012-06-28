@@ -1,8 +1,8 @@
-function loadSprites(which){
+function loadSprites(which) {
 	/**
 	 * Environmental Sprites
 	 */
-	if(which === "environment"){
+	if (which === "environment") {
 		Crafty.sprite(32, "sprites.png", {
 			wall: [0, 0],
 			brick: [0, 1],
@@ -27,7 +27,7 @@ function loadSprites(which){
 	/**
 	 * Player Sprites
 	 */
-	if(which === "players"){
+	if (which === "players") {
 		Crafty.sprite("sprite_players.png", {
 			POLICEMAN: [0, 0, 32, 44],
 			POLICEMAN_DEATH: [0, 44, 32, 44],
@@ -43,5 +43,5 @@ function loadSprites(which){
 			MICHA_DEATH: [0, 748, 32, 44]
 		});
 	}
-};
+}
 
