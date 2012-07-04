@@ -1,11 +1,11 @@
 /** 
 * @projectDescription   ReMasterBlaster Project
 *
-* @author   Michael micha@remasterblaster.com
+* @author   Micha micha@remasterblaster.com
 * @version  0.8 
 */
 
-function startGame(playerObj) {//gameStat
+function startGame(gameState, main) {//gameState
 	//start crafty
 	Crafty.init(608, 480);
 	
@@ -31,10 +31,10 @@ function startGame(playerObj) {//gameStat
 		bomb_array[i] = new Array(15);
 	}
 	var string = "";
-	var MAX_PLAYERS = playerObj.length;
-	var PLAYERS_ALIVE = playerObj.length;
-	var PLAYER_1 = playerObj[0].username;
-	var PLAYER_2 = playerObj[1].username;
+	var MAX_PLAYERS = gameState.length;
+	var PLAYERS_ALIVE = gameState.length;
+	var PLAYER_1 = gameState[0].username;
+	var PLAYER_2 = gameState[1].username;
     
     //array that will get a reference to the players
 	players = new Array(5);
@@ -43,7 +43,7 @@ function startGame(playerObj) {//gameStat
 	}
 	
     //array which will get the player number for each killed player in ascending order
-	var ranking = new Array(playerObj.length);
+	var ranking = new Array(gameState.length);
 	for (var i=1; i <= MAX_PLAYERS; i++) {
 		ranking[i] = 0;
 	}
@@ -70,15 +70,90 @@ function startGame(playerObj) {//gameStat
 
 		}, 100);
 	}
+	function appearWall (x, y) {
+		Crafty.e("2D","DOM","SpriteAnimation", "wall_appear", "animate")
+			.attr({x: x, y: y, z: 101})
+	    	.animate('wall_appear', 0, 8, 4)
+			.bind("enterframe", function(e){
+				this.animate("wall_appear", 10);
+			})
+			.delay(function(){
+				this.destroy();
+			}, 300);
+	
+	}
 
 	/**
-	*Death by Timeout
-	*@author Sergej
-	*/
-	function alarmDeath(){
-
-		
-	}
+	 *Shrinking function
+	 */
+	function startShrinking(){
+		 Crafty.e("Shrinking")
+		    .setWall(32*17,32*13, -1, 0, 220);
+	};
+	/**
+	 * Shrinking Component
+	 * calls new entity after specific time
+	 */
+	Crafty.c("Shrinking", {
+		setWall:function (x, y, dx, dy, wallsLeft) {
+			var dxl = dx; 
+			var dyl = dy;
+			var xi = x;
+			var yi = y;
+			var trigger = true;
+			if (brick_array[(x+(dxl*32))/32][(y+(dyl*32))/32]==1) {
+				switch (dyl) {
+					case -1:
+						dxl = 1;
+						dyl = 0;
+						trigger = false;
+						break;
+					case 1:
+						dxl = -1;
+						dyl = 0;
+						trigger = false;
+					default:
+						break;
+				}
+				if (trigger) {
+					switch (dxl) {
+						case -1:
+							dxl = 0;
+							dyl = -1;
+							break;
+						case 1:
+							dxl = 0;
+							dyl = 1;
+						default:
+							break;
+					}
+				}
+			}
+			appearWall(x, y);
+			
+			if (wallsLeft >= 0) {
+	       		this.addComponent("2D","DOM", "wall")
+					.attr({x: x, y: y, z: 100});
+					this.delay(function	() {
+						xi = x+(dxl * 32);
+						yi = y+(dyl * 32);			       		
+						var s = Crafty.e("Shrinking")
+							.setWall(xi, yi, dxl, dyl, wallsLeft-1);
+					}, 500);
+				brick_array[x/32][y/32] = 1;
+				for (var i=0; i < players.length; i++) {
+			 		if (players[i] != undefined) {							
+		 				if (xRelocator(players[i].x) == x && yRelocator(players[i].y)+12 == y) {
+							players[i].xDeath = xRelocator(x);
+							players[i].yDeath = yRelocator(y)+12;
+							players[i].trigger("explode");
+						}
+					}
+			 	}
+			} else {		
+			}
+		}
+	});
 
 	
 	/**
@@ -109,12 +184,16 @@ function startGame(playerObj) {//gameStat
      */
 	function checkForWinner(dyingPlayer) {
 		var help=0;
+		console.log(dyingPlayer.PLAYER+" is dead");
+		
 		if (PLAYERS_ALIVE<=1) {
 			for (var i=0; i < players.length; i++) {
 				if (players[i] != undefined) {
 					console.log("Winner: " + players[i].PLAYER);
-					playerObj[i].wins++;
-					//gameFinished(playerObj);
+					gameState[i].wins++;
+					setTimeout(function(){
+						main.gameFinished(gameState);
+					}, 2000);
 				} else {
 					help = help +1;
 				}
@@ -135,6 +214,8 @@ function startGame(playerObj) {//gameStat
 		}
 		console.log("erster: " +  ranking[1]);
 		console.log("zweiter: " + ranking[2]);
+		console.log("dritter: " + ranking[3]);
+		
 	}
 	
 	/**
@@ -328,7 +409,7 @@ function startGame(playerObj) {//gameStat
 				return false;
 			}
 			if (brick_array[x][y]==5) {
-				if (Math.round(self.y+12)/32 == y ) {
+				if (Math.round(self.y)/32 == y ) {
 					return false;
 				}
 			}
@@ -548,7 +629,7 @@ function startGame(playerObj) {//gameStat
 	//the loading screen that will display while our assets load
 	Crafty.scene("loading", function() {
 		//load takes an array of assets and a callback when complete
-		Crafty.load(["sprites.png", "sprite_players.png"], function() {
+		Crafty.load(["img/sprites.png", "img/sprite_players.png"], function() {
 			Crafty.scene("main"); //when everything is loaded, run the main scene
 		});
 		
@@ -692,7 +773,7 @@ function startGame(playerObj) {//gameStat
 				})
 				.delay(function() {
 					if(Crafty.randRange(0, 50) > 25){
-						switch (/*parseInt(getRandom(7))*/6) {
+						switch (/*parseInt(getRandom(7))*/3) {
 							case 0:
 								generateGoody("speed_up", x, y, 10);
 								break;
@@ -729,13 +810,14 @@ function startGame(playerObj) {//gameStat
 		
 		var Gamelogic = function (pn){
 			{
-				this.CustomControlsPlayer = function(playerObject) {
+				this.gamelogic = function(gameState) {
 					var move = {left: false, right: false, up: false, down: false};	
 					var saveMove = {left: false, right: false, up: false, down: false};
 					var costumKeys = {left: 0, right: 0, up: 0, down: 0};
 					var xDeath, yDeath;
 					var maxBombs, speed, fireRange, timeTillExplode, triggeredBomb, bombsPlanted, PLAYER_NUMBER, money; 
 					var timeFuze, invincible;
+					var triggeredBomb;
 					
 					this.move = {left: false, right: false, up: false, down: false};	
 					this.saveMove = {left: false, right: false, up: false, down: false};
@@ -750,25 +832,44 @@ function startGame(playerObj) {//gameStat
 					this.bombsPlanted = 0;
 					this.PLAYER = "";
 					this.PLAYER_NUMBER = pn;
+					this.triggeredBomb = 0;
 					
 					var posObj = generateStartPosition(this.PLAYER_NUMBER);
 					this.x = posObj.x;
 					this.y = posObj.y;
 					this.z = posObj.z;
 					
-					if(playerObject) {
-						this.speed = playerObject.speed;
-						this.maxBombs = playerObject.maxbomben;
-						var PLAYER = playerObject.username;
+					/*if(gameState) {
+						this.speed = gameState.speed;
+						this.maxBombs = gameState.maxbomben;
+						var PLAYER = gameState.username;
 						this.PLAYER = PLAYER;
-						this.money = playerObject.money;
+						this.money = gameState.money;
+					}*/
+					
+					
+					if(gameState) {
+						this.speed = gameState.speed;
+						this.maxBombs = gameState.maxBombs;
+						var PLAYER = gameState.username;
+						this.PLAYER = PLAYER;
+						this.money = gameState.money;
+						this.fireRange = gameState.fireRange;
+						this.speed = gameState.speed;
+						if(gameState.invincible){
+							this.invincible = true;
+							this.addComponent("Invincible");
+							this.setInvincibleAnimation(this.PLAYER);
+						}
+						console.log(gameState);
 					}
 					
-					costumKeys.left = playerObject.controls.left;
-					costumKeys.right = playerObject.controls.right;
-					costumKeys.up = playerObject.controls.up;
-					costumKeys.down = playerObject.controls.down;
-					costumKeys.bomb = playerObject.controls.bomb;
+
+					costumKeys.left = gameState.controls.left;
+					costumKeys.right = gameState.controls.right;
+					costumKeys.up = gameState.controls.up;
+					costumKeys.down = gameState.controls.down;
+					costumKeys.bomb = gameState.controls.bomb;
 
 					var self = this;
 					
@@ -791,11 +892,10 @@ function startGame(playerObj) {//gameStat
 							if(yNewRelativePlayerPosition < yOldRelativePlayerPosition){
 								this.z -=1
 							}
-
 							xOldRelativePlayerPosition = xNewRelativePlayerPosition;
 							yOldRelativePlayerPosition = yNewRelativePlayerPosition;						
 						}
-						if(move.right) {
+						if (move.right) {
 							if(!this.isPlaying("walk_right_"+PLAYER))
 								this.stop().animate("walk_right_"+PLAYER, 6);
 							
@@ -806,18 +906,18 @@ function startGame(playerObj) {//gameStat
 								saveMove.right = true;
 							}
 						}
-						else if(move.left) {
+						else if (move.left) {
 							if(!this.isPlaying("walk_left_"+PLAYER))
 								this.stop().animate("walk_left_"+PLAYER, 6);
 								
-							if(!solidLeft(this)){
+							if (!solidLeft(this)) {
 								var r = yPlayerRelocator(this.y+12);
 								this.y = r;
 								this.x -= this.speed; 
 								saveMove.left = true;
 							}
 						}
-						else if(move.up) {
+						else if (move.up) {
 							if(!this.isPlaying("walk_up_"+PLAYER))
 								this.stop().animate("walk_up_"+PLAYER, 6);
 								
@@ -828,7 +928,7 @@ function startGame(playerObj) {//gameStat
 								saveMove.up = true;
 							}
 						}
-						else if(move.down) {
+						else if (move.down) {
 							if(!this.isPlaying("walk_down_"+PLAYER))
 								this.stop().animate("walk_down_"+PLAYER, 6);
 							if(!solidDown(this)){
@@ -838,7 +938,7 @@ function startGame(playerObj) {//gameStat
 								saveMove.down = true;
 							}
 						}
-						}).bind('keydownself', function(e) {
+					}).bind('keydownself', function(e) {
 						if (e.which === costumKeys.right) {
 							saveMove.right = true;
 							move.right = true;
@@ -897,7 +997,7 @@ function startGame(playerObj) {//gameStat
 								if(this.bombsPlanted < 1) {
 									this.bombsPlanted = 1;
 									brick_array[xGrid/32][yGrid/32] = 5;
-									triggeredBomb = Crafty.e("2D","DOM","SpriteAnimation", "bomb", "animate", "explodable")
+									this.triggeredBomb = Crafty.e("2D","DOM","SpriteAnimation", "bomb", "animate", "explodable")
 										.attr({x: xGrid, y: yGrid, z: 9})
 							        	.animate('bomb', 0, 2, 2)
 										.bind("enterframe", function(e){
@@ -911,8 +1011,7 @@ function startGame(playerObj) {//gameStat
 										})										
 								}						
 							}
-		             };	
-			
+		             };				
 					}).bind('keyupself', function(e) {
 						if (e.which === costumKeys.right) {
 							move.right = false;
@@ -933,20 +1032,18 @@ function startGame(playerObj) {//gameStat
 							move.down = saveMove.down = false;
 							this.stop().animate("stay_down_"+PLAYER, 1);
 						}
-
-
-						if(this.timeFuze){
-							if(e.which === costumKeys.bomb) {
-								triggeredBomb.trigger("explode");
-								bombsPlanted = 0;
+						if (this.timeFuze) {
+							if (e.which === costumKeys.bomb) {
+								this.triggeredBomb.trigger("explode");
+								this.bombsPlanted = 0;
 							}
 						}			
 					})
 					return this;
 				}
 				this.detonateTriggeredBomb = function(){
-					if(triggeredBomb){
-						triggeredBomb.trigger("explode");
+					if(this.timeFuze){
+						this.triggeredBomb.trigger("explode");
 					}
 				};
 
@@ -964,15 +1061,14 @@ function startGame(playerObj) {//gameStat
 			setDeathAnimation:function (self) {
 				var PLAYERDEATHCORD = getPlayerCord(self.PLAYER) + 44;
 				this.addComponent(self.PLAYER+"_DEATH")
+				.attr({z: 200})
 				.animate(self.PLAYER+"_DEATH", [[0,PLAYERDEATHCORD],[32,PLAYERDEATHCORD],[64,PLAYERDEATHCORD],
 				[96,PLAYERDEATHCORD],[128,PLAYERDEATHCORD],[160,PLAYERDEATHCORD],[192,PLAYERDEATHCORD],
 				[224,PLAYERDEATHCORD],[256,PLAYERDEATHCORD]])
-				//.animate('sprite_player_death_1', 0, 3, 8)
 				.bind("enterframe", function(e){
 					this.animate(self.PLAYER+"_DEATH", 10);
 				})
 				.delay(function() {
-					console.log(self.PLAYER+" is dead");
 					PLAYERS_ALIVE -=1;
 					removeReference(self);
 					checkForWinner(self);
@@ -1048,21 +1144,20 @@ function startGame(playerObj) {//gameStat
 		*@author Sergej
 		*/
 		setTimeout(function() { 
-
-			backgroundAlarm(startcolor);
-			alarmDeath();
+			//backgroundAlarm(startcolor);
+			//startShrinking();
 			//alarm.play();
 		}, 3000); //Time passing after starting game before Alarm starts (in milli seconds)
 
 		/**
 		 * Generates an instances of players
 		 */
-		for (var i=0; i < playerObj.length; i++) {
-			var GL = new Gamelogic(i+1);
-			Crafty.c('CustomControls', GL);
+		for (var i=0; i < gameState.length; i++) {
 
-			players[i] = Crafty.e("2D, DOM,"+ playerObj[i].username +", CustomControls, animate, explodable, Normal")
-				.CustomControlsPlayer(playerObj[i])
+			Crafty.c('Gamelogic'+i, new Gamelogic(i+1));
+
+			players[i] = Crafty.e("2D", "DOM", gameState[i].username, "Gamelogic"+i, "animate", "explodable", "Normal")
+				.gamelogic(gameState[i])
 				.bind("explode", function() {
 					if(this.timeFuze){
 						this.detonateTriggeredBomb();
@@ -1072,7 +1167,7 @@ function startGame(playerObj) {//gameStat
 						.setDeathAnimation(this);
 					this.destroy();
 				})
-				.setNormalAnimation(playerObj[i].username);
+				.setNormalAnimation(gameState[i].username);
 		};
 	});
 };
