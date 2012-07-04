@@ -1,0 +1,192 @@
+<html>
+<head>
+    <script type="text/javascript" src="crafty.js"></script>
+    <title>My Crafty Game</title>
+    <style>
+	@font-face { font-family: "Amiga"; src: url('amiga4ever.ttf') format("truetype");}
+    body, html { margin:0; padding: 0; overflow:hidden;font-family: "Amiga"; font-size:1.0em; text-transform: uppercase;}
+    #cr-stage {border:2px solid black; margin:5px auto; color:white }
+	#myCanvas {margin: 5px auto; height:480px; width:608px; border:2px solid black; background: #333; position:relative;display:block;}
+    </style>
+</head>
+<body>
+	<script src="jquery.min.js"></script>
+	<script src="game.js"></script>
+	<script src="sprites.js"></script>
+	<div id = "myCanvas">
+		<canvas id="canv" width="608" height="480"></canvas>
+	</div>
+	<script>
+		window.onload = function () {
+			that = this;
+			//start crafty
+			var size_x=608;
+			var size_y=480;
+			var scene="";
+			var playerObj=[
+				{username:"POLICEMAN", spriteposition: 0,controls:{left:65,right:68,up:87,down:83,bomb:32},money:3,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
+				{username:"DUKE", spriteposition: 1,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
+				{username:"DETECTIVE", spriteposition: 2,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
+				{username:"GREEN", spriteposition: 3,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
+				{username:"CHINESE", spriteposition: 4,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0}
+			];
+
+			var config = 
+			{
+				"menu":[
+					{text:"WINS NEEDED",value:3,min:3,max:9},
+					{text:"PLAYERS",value:2,min:2,max:2},
+					{text:"SHOP",value:"ON"},
+					{text:"SHRINKING",value:"OFF"},
+					{text:"FASTIGNITION",value:"ON"},
+					{text:"STARTMONEY",value:"OFF"},
+					{text:"NORMALLEVEL",value:"YES"},
+					{text:"GAMBLING",value:"YES"}
+				],
+				"player":[
+					{name:"POLICEMAN",taken:true,sx:0,sy:0,sw:32,sh:44},
+					{name:"DUKE",taken:true,sx:0,sy:132,sw:32,sh:44},
+					{name:"DETECTIVE",taken:true,sx:0,sy:264,sw:32,sh:44},
+					{name:"GREEN",taken:true,sx:0,sy:396,sw:32,sh:44},
+					{name:"CHINESE",taken:true,sx:0,sy:528,sw:32,sh:44},
+					{name:"MICHA",taken:false,sx:0,sy:660,sw:32,sh:44}
+				],
+				"environmentExtras":[
+					{name:"throphy",sx:64,sy:224,sw:32,sh:32},
+					{name:"money",sx:32,sy:224,sw:32,sh:32}
+				],
+				"buyableExtras":[
+					{name:"EXTRA BOMB",sx:32,sy:160,sw:32,sh:32,prize:1,extrasname:"maxBombs"}, 
+					{name:"POWER-UP",sx:64,sy:160,sw:32,sh:32,prize:1,extrasname:"fireRange"},
+					{name:"TIMEBOMB",sx:96,sy:160,sw:32,sh:32,prize:3,extrasname:"timeBomb"},
+					{name:"PROTECTION",sx:0,sy:192,sw:32,sh:32,prize:3,extrasname:"invinsible"},
+					{name:"SPEED-UP",sx:0,sy:160,sw:32,sh:32,prize:4,extrasname:"speed"}
+				],
+			};
+			var players=new Image();
+			players.src="img/sprite_players.png";
+			
+			var extras=new Image();
+			extras.src="img/sprites.png";
+			
+			var active_position=0;
+			var active_player=0;
+			
+			var canv = document.getElementById ("canv");
+			var ctx = canv.getContext ("2d");
+			ctx.font = "15px Amiga";
+			
+			function drawShop(playerNr)
+			{
+				active_player = playerNr;
+				scene = "shop";
+				console.log("Loading scene:", scene, "for player", playerNr)
+				var y_line=1;
+				ctx.fillStyle = "blue";
+				ctx.clearRect (0, 0, canv.width, canv.height);
+					
+				for(var i=0;i < config.buyableExtras.length; i++)
+				{
+					if (y_line == 1)
+					{
+						ctx.fillText (playerObj[active_player].username + " ENTERS SHOP", 120, 35*y_line);
+						y_line++;
+							
+						if (playerObj[active_player].money > 0)
+						{
+							ctx.fillText ("MONEY:", 50, 45*y_line);
+							for (var j=0; j < playerObj[active_player].money; j++)
+							{
+								ctx.drawImage(extras,config.environmentExtras[1].sx,config.environmentExtras[1].sy,config.environmentExtras[1].sw,config.environmentExtras[1].sh,150+(j*32),35*y_line,config.environmentExtras[1].sw,config.environmentExtras[1].sh);
+								//ctx.fillText ("t", 300+(j*32), 45*y_line);
+							}
+						}
+						y_line++;
+						ctx.fillText ("EXTRAS", 170, 45*y_line);
+						ctx.fillText ("PRIZE", 370, 45*y_line);
+						y_line++;
+					}
+						
+					if (active_position===i) 
+					{
+						ctx.fillStyle = "red";
+						ctx.fillText (" > ", 70, 45*y_line);
+					};
+					ctx.fillStyle = "blue";
+					ctx.fillText (config.buyableExtras[i].name, 120, 45*y_line);
+					ctx.drawImage(extras,config.buyableExtras[i].sx,config.buyableExtras[i].sy,config.buyableExtras[i].sw,config.buyableExtras[i].sh,300,41*y_line,config.buyableExtras[i].sw,config.buyableExtras[i].sh);
+					ctx.fillText (config.buyableExtras[i].prize, 370, 45*y_line);
+					y_line++;
+				}
+				ctx.fillText ("EXIT", 250, 50*y_line);
+			}
+			
+			$(document).keydown(function(event){
+				if (scene==="shop")
+				{
+					if (event.which === playerObj[active_player].controls.bomb)
+					{ //enter
+						if (playerObj[active_player].money >= config.buyableExtras[active_position].prize)
+						{
+							playerObj[active_player].money = playerObj[active_player].money - config.buyableExtras[active_position].prize;
+							//console.log(playerObj[active_player].config.buyableExtras[active_position].extrasname)
+							if (config.buyableExtras[active_position].name==="EXTRA BOMB")
+							{
+								playerObj[active_player].maxBombs++;
+							}
+							if (config.buyableExtras[active_position].name==="POWER-UP")
+							{
+								playerObj[active_player].fireRange++;
+							}
+							if (config.buyableExtras[active_position].name==="TIMEBOMB")
+							{
+								playerObj[active_player].timeBomb = true;
+							}
+							if (config.buyableExtras[active_position].name==="POWER-UP")
+							{
+								playerObj[active_player].invinsible = true;
+							}
+							if (config.buyableExtras[active_position].name==="SPEED-UP")
+							{
+								playerObj[active_player].speed = playerObj[active_player].speed + 0.5;
+							}
+							//playerObj[active_player]
+							console.log("geld reicht");
+							//playSound("cash");
+							drawShop(active_player);
+						}
+						if(playerObj[active_player].money === 0)
+						{
+							console.log("not enough");
+							//playSound("burb");
+							//active_player++;
+						}
+						//console.log("enter");
+						drawShop(active_player);
+					}
+					else if (event.which === playerObj[active_player].controls.up)
+					{ //up
+						if (active_position >0)
+						{
+							active_position--;
+						}
+						console.log("up");
+						drawShop(active_player);
+					}
+					else if (event.which === playerObj[active_player].controls.down)
+					{ //down
+						if (active_position < playerObj.length-1)
+						{
+							active_position++;
+						}
+						console.log("down");
+						drawShop(active_player);
+					}
+				}
+			});
+			
+			drawShop(0);
+		}
+	</script>
+</body>
+</html>
