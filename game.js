@@ -88,7 +88,7 @@ function startGame(gameState, main) {//gameState
 	 */
 	function startShrinking(){
 		 Crafty.e("Shrinking")
-		    .setWall(32*17,32*13, -1, 0, 220);
+		    .setWall(32*1,32*1, 1, 0, 220);
 	};
 	/**
 	 * Shrinking Component
@@ -139,7 +139,7 @@ function startGame(gameState, main) {//gameState
 						yi = y+(dyl * 32);			       		
 						var s = Crafty.e("Shrinking")
 							.setWall(xi, yi, dxl, dyl, wallsLeft-1);
-					}, 500);
+					}, 20);
 				brick_array[x/32][y/32] = 1;
 				for (var i=0; i < players.length; i++) {
 			 		if (players[i] != undefined) {							
@@ -588,7 +588,17 @@ function startGame(gameState, main) {//gameState
 			return 1000;
 		}
 	};
-	
+	function makeInvincible(self){
+		setTimeout(function(){
+			self.invincible = true;
+			self.addComponent("Invincible");
+			self.setInvincibleAnimation(self.PLAYER);
+			var PLAYERCORD = getPlayerCord(self.PLAYER)+88;
+			self.animate("walk_down_"+self.PLAYER, [[0,PLAYERCORD]]);
+			
+			self.stop().animate("walk_down_"+self.PLAYER, 6);
+		}, 1);
+	}
 	/**
 	 * function generates the world
 	 * generates the wall and brick entities
@@ -847,8 +857,7 @@ function startGame(gameState, main) {//gameState
 						this.money = gameState.money;
 					}*/
 					
-					
-					if(gameState) {
+					if(gameState) {			
 						this.speed = gameState.speed;
 						this.maxBombs = gameState.maxBombs;
 						var PLAYER = gameState.username;
@@ -856,12 +865,9 @@ function startGame(gameState, main) {//gameState
 						this.money = gameState.money;
 						this.fireRange = gameState.fireRange;
 						this.speed = gameState.speed;
-						if(gameState.invincible){
-							this.invincible = true;
-							this.addComponent("Invincible");
-							this.setInvincibleAnimation(this.PLAYER);
+						if(gameState.invinsible){
+							makeInvincible(this);
 						}
-						console.log(gameState);
 					}
 					
 
