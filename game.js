@@ -584,8 +584,16 @@ function startGame(gameState, main) {//gameState
 			return 528;			
 		} else if (playerString == "MICHA") {
 			return 660;
-		} else{
-			return 1000;
+		} else if (playerString == "SERGEJ") {
+			return 792;
+		} else if(playerString == "PAVLINA"){
+			return 924;
+		} else if (playerString == "MAX") {
+			return 1056;
+		} else if (playerString == "SEBASTIAN"){
+			return 1188;
+		} else {
+			return 2000;
 		}
 	};
 	function makeInvincible(self){
