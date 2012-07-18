@@ -24,11 +24,12 @@ function startGame(gameState, main) {//gameState
 	var warp = new Audio("sounds/warp.mp3");
 	//var stop = new Audio("sounds/stop.mp3");
 	var cash = new Audio("sounds/cash.mp3");
-	var alarm = new Audio("sounds/alarmloop.mp3");	
+	var alarm = new Audio("sounds/alarmloop.mp3");
 	
 	
 	//variable that indicates if the game is running/or not
 	var STATUS = true;
+	
 	/**
 	 * variable declarations
 	 */
@@ -38,12 +39,13 @@ function startGame(gameState, main) {//gameState
 	var bomb_array = new Array(19);
 	var player_position_array = new Array(19);
 	
-	for (i=0; i <=18; i++){
+	for (i=0; i <=18; i++) {
 		brick_array[i] = new Array(15);
 		entity_array[i] = new Array(15);
 		goody_array[i] = new Array(15);
 		bomb_array[i] = new Array(15);
 	}
+	
 	var string = "";
 	var MAX_PLAYERS = gameState.length;
 	var PLAYERS_ALIVE = gameState.length;
@@ -86,15 +88,18 @@ function startGame(gameState, main) {//gameState
 	function backgroundAlarm(red) {
 		var red;
 		var frameskip = 40; //Value for animationspeed of the color change
-		document.body.style.backgroundColor = 'rgb(' + red + ', 0, 0)';
-
+		//document.body.style.backgroundColor = 'rgb(' + red + ', 0, 0)';
+		$("body").css("background-color", "rgb("+ red + ",0,0)");
 		setTimeout(function() {
-
+			
 			if(red>=255 || red<0){
 				neg=neg*(-1);		
 			}
-			backgroundAlarm(red=red+frameskip*neg);	
-
+			if (STATUS) {
+				backgroundAlarm(red=red+frameskip*neg);	
+			} else {
+				$("body").css("background-color", "black");
+			}
 		}, 100);
 	}
 	function setShrinkingWall (x, y) {
@@ -123,61 +128,63 @@ function startGame(gameState, main) {//gameState
 	 */
 	Crafty.c("Shrinking", {
 		setWall:function (x, y, dx, dy, wallsLeft) {
-			var dxl = dx; 
-			var dyl = dy;
-			var xi = x;
-			var yi = y;
-			var trigger = true;
-			if (brick_array[(x+(dxl*32))/32][(y+(dyl*32))/32]==1) {
-				switch (dyl) {
-					case -1:
-						dxl = 1;
-						dyl = 0;
-						trigger = false;
-						break;
-					case 1:
-						dxl = -1;
-						dyl = 0;
-						trigger = false;
-					default:
-						break;
-				}
-				if (trigger) {
-					switch (dxl) {
+			if (STATUS) {
+				var dxl = dx; 
+				var dyl = dy;
+				var xi = x;
+				var yi = y;
+				var trigger = true;
+				if (brick_array[(x+(dxl*32))/32][(y+(dyl*32))/32]==1) {
+					switch (dyl) {
 						case -1:
-							dxl = 0;
-							dyl = -1;
+							dxl = 1;
+							dyl = 0;
+							trigger = false;
 							break;
 						case 1:
-							dxl = 0;
-							dyl = 1;
+							dxl = -1;
+							dyl = 0;
+							trigger = false;
 						default:
 							break;
 					}
-				}
-			}
-			setShrinkingWall(x, y);
-			
-			if (wallsLeft >= 0) {
-	       		this.addComponent("2D","DOM", "wall")
-					.attr({x: x, y: y, z: 100});
-					this.delay(function	() {
-						xi = x+(dxl * 32);
-						yi = y+(dyl * 32);			       		
-						var s = Crafty.e("Shrinking")
-							.setWall(xi, yi, dxl, dyl, wallsLeft-1);
-					}, 300);
-				brick_array[x/32][y/32] = 1;
-				for (var i=0; i < players.length; i++) {
-			 		if (players[i] != undefined) {							
-		 				if (xRelocator(players[i].x) == x && yRelocator(players[i].y)+12 == y) {
-							players[i].xDeath = xRelocator(x);
-							players[i].yDeath = yRelocator(y)+12;
-							players[i].trigger("explode");
+					if (trigger) {
+						switch (dxl) {
+							case -1:
+								dxl = 0;
+								dyl = -1;
+								break;
+							case 1:
+								dxl = 0;
+								dyl = 1;
+							default:
+								break;
 						}
 					}
-			 	}
-			} else {		
+				}
+				setShrinkingWall(x, y);
+			
+				if (wallsLeft >= 0) {
+		       		this.addComponent("2D","DOM", "wall")
+						.attr({x: x, y: y, z: 10});
+						this.delay(function	() {
+							xi = x+(dxl * 32);
+							yi = y+(dyl * 32);			       		
+							var s = Crafty.e("Shrinking")
+								.setWall(xi, yi, dxl, dyl, wallsLeft-1);
+						}, 300);
+					brick_array[x/32][y/32] = 1;
+					for (var i=0; i < players.length; i++) {
+				 		if (players[i] != undefined) {							
+			 				if (xRelocator(players[i].x) == x && yRelocator(players[i].y)+12 == y) {
+								players[i].xDeath = xRelocator(x);
+								players[i].yDeath = yRelocator(y)+12;
+								players[i].trigger("explode");
+							}
+						}
+				 	}
+				} else {		
+				}
 			}
 		}
 	});
@@ -189,9 +196,7 @@ function startGame(gameState, main) {//gameState
 		
  		for (var i=0; i < players.length; i++) {
  			if(players[i] != undefined){
-				if(STATUS) { 
- 					players[i].trigger("keydownself", event);
-				}
+ 				players[i].trigger("keydownself", event);
 			}
  		};
 	});
@@ -202,9 +207,7 @@ function startGame(gameState, main) {//gameState
 	$(document).keyup(function(event){
 		for (var i=0; i < players.length; i++) {
  			if(players[i] != undefined){
-				if(STATUS) { 
-	 				players[i].trigger("keyupself", event);
-				}
+	 			players[i].trigger("keyupself", event);
 			}
  		};
 	});
@@ -222,7 +225,6 @@ function startGame(gameState, main) {//gameState
 		console.log(dyingPlayer.PLAYER+" is dead");
 		
 		if (PLAYERS_ALIVE<=1) {
-			STATUS = false;
 			for (var i=0; i < players.length; i++) {
 
 				if (players[i] != undefined) {
@@ -255,6 +257,8 @@ function startGame(gameState, main) {//gameState
 						for (var i=0; i < players.length; i++) {
 							players[i] != undefined;
 						}
+						STATUS = false;
+						Crafty.stop();
 					}, 5000);
 				} else {
 					help = help +1;
@@ -1222,14 +1226,15 @@ function startGame(gameState, main) {//gameState
 		*@author Sergej
 		*/
 		setTimeout(function() { 
-			if(STATUS){
-				backgroundAlarm(startcolor);
+			//if (PLAYERS_ALIVE<=1) {
+				backgroundAlarm(startcolor);	
+				
 				setTimeout(function(){
 					startShrinking();
 				}, 5000);
 				//alarm.play();
-			}
-		}, 60000); //Time passing after starting game before Alarm starts (in milli seconds)
+			//}
+		}, 10000); //Time passing after starting game before Alarm starts (in milli seconds)
 
 		/**
 		 * Generates an instances of players
@@ -1246,7 +1251,7 @@ function startGame(gameState, main) {//gameState
 						this.detonateTriggeredBomb();
 					}
 					Crafty.e("DeathAnimation", "2D","DOM","SpriteAnimation", "animate")
-						.attr({x: this.xDeath, y: this.yDeath-12, z: 10})
+						.attr({x: this.xDeath, y: this.yDeath-12, z: 100})
 						.setDeathAnimation(this);
 					this.destroy();
 				})
