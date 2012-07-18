@@ -8,13 +8,27 @@
 function startGame(gameState, main) {//gameState
 	//start crafty
 	Crafty.init(608, 480);
-	
 	/**
 	 * Sprites
 	 */
 	loadSprites("environment");
 	loadSprites("players");
-		
+	
+	//initialize sounds
+	var bgmusic = new Audio("sounds/bgmusic.mp3"); 
+	var exp = new Audio("sounds/explode.mp3"); 
+	var scream = new Audio("sounds/scream.mp3");
+	var itemSpeedUp = new Audio("sounds/go.mp3");
+	var bingo = new Audio("sounds/bingo.mp3");
+	var ohlala = new Audio("sounds/ohlala.mp3");
+	var warp = new Audio("sounds/warp.mp3");
+	//var stop = new Audio("sounds/stop.mp3");
+	var cash = new Audio("sounds/cash.mp3");
+	var alarm = new Audio("sounds/alarmloop.mp3");	
+	
+	
+	//variable that indicates if the game is running/or not
+	var STATUS = true;
 	/**
 	 * variable declarations
 	 */
@@ -48,6 +62,19 @@ function startGame(gameState, main) {//gameState
 		ranking[i] = 0;
 	}
 	
+	/**
+	 * this function detects where a bricks will be genereated
+	 * @return {Bool}  true for a bricks/false for none
+	 */
+	function checkPositionForBricks(i, j) {
+		if (i > 0 && i < 18 && j > 0 && j < 14 &&  !(i == 1 && j == 1) && !(i == 1 && j == 2)
+			&& !(i == 1 && j == 3) && !(i == 1 && j == 4) && !(i == 2 && j == 1) && !(i == 3 && j == 2) && !(i == 4 && j == 1)
+		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	var startcolor = 0;      //The starting RGB Red-Value
 	var neg = 1;             //Variable to be negated once the Red Value reaches 0 or 255
@@ -70,7 +97,7 @@ function startGame(gameState, main) {//gameState
 
 		}, 100);
 	}
-	function appearWall (x, y) {
+	function setShrinkingWall (x, y) {
 		Crafty.e("2D","DOM","SpriteAnimation", "wall_appear", "animate")
 			.attr({x: x, y: y, z: 101})
 	    	.animate('wall_appear', 0, 8, 4)
@@ -129,7 +156,7 @@ function startGame(gameState, main) {//gameState
 					}
 				}
 			}
-			appearWall(x, y);
+			setShrinkingWall(x, y);
 			
 			if (wallsLeft >= 0) {
 	       		this.addComponent("2D","DOM", "wall")
@@ -139,7 +166,7 @@ function startGame(gameState, main) {//gameState
 						yi = y+(dyl * 32);			       		
 						var s = Crafty.e("Shrinking")
 							.setWall(xi, yi, dxl, dyl, wallsLeft-1);
-					}, 20);
+					}, 300);
 				brick_array[x/32][y/32] = 1;
 				for (var i=0; i < players.length; i++) {
 			 		if (players[i] != undefined) {							
@@ -155,14 +182,16 @@ function startGame(gameState, main) {//gameState
 		}
 	});
 
-	
 	/**
 	 * Handler for keydown events, sends event to all players
 	 */
 	$(document).keydown(function(event){
+		
  		for (var i=0; i < players.length; i++) {
  			if(players[i] != undefined){
- 				players[i].trigger("keydownself", event);
+				if(STATUS) { 
+ 					players[i].trigger("keydownself", event);
+				}
 			}
  		};
 	});
@@ -173,11 +202,17 @@ function startGame(gameState, main) {//gameState
 	$(document).keyup(function(event){
 		for (var i=0; i < players.length; i++) {
  			if(players[i] != undefined){
- 				players[i].trigger("keyupself", event);
+				if(STATUS) { 
+	 				players[i].trigger("keyupself", event);
+				}
 			}
  		};
 	});
-
+	/**
+	 * function that releases all sound files and player objects 
+	 */
+	
+	
     /**
      * this function which detects the winner of the round, 
      * gets invoked every time a player gets killed
@@ -187,13 +222,40 @@ function startGame(gameState, main) {//gameState
 		console.log(dyingPlayer.PLAYER+" is dead");
 		
 		if (PLAYERS_ALIVE<=1) {
+			STATUS = false;
 			for (var i=0; i < players.length; i++) {
+
 				if (players[i] != undefined) {
 					console.log("Winner: " + players[i].PLAYER);
 					gameState[i].wins++;
 					setTimeout(function(){
+						//bgmusic.pause()
+						bgmusic.pause();
+						bgmusic.currentTime = 0;
+						exp.pause();
+						exp.currentTime = 0;
+						scream.pause();
+						scream.currentTime = 0;
+						itemSpeedUp.pause();
+						itemSpeedUp.currentTime = 0;
+						bingo.pause();
+						bingo.currentTime = 0;
+						ohlala.pause();
+						ohlala.currentTime = 0;
+						warp.pause();
+						warp.currentTime = 0;
+						cash.pause();
+						cash.currentTime = 0;
+						alarm.pause();
+						alarm.currentTime = 0;
+						//bgmusic = null;
+						bgmusic = exp = scream = itemSpeedUp = bingo = ohlala = warp = stop = cash = alarm = undefined;
+						
 						main.gameFinished(gameState);
-					}, 2000);
+						for (var i=0; i < players.length; i++) {
+							players[i] != undefined;
+						}
+					}, 5000);
 				} else {
 					help = help +1;
 				}
@@ -211,21 +273,15 @@ function startGame(gameState, main) {//gameState
 				ranking[i] = dyingPlayer.PLAYER_NUMBER;
 				break;
 			}
-		}
-		console.log("erster: " +  ranking[1]);
-		console.log("zweiter: " + ranking[2]);
-		console.log("dritter: " + ranking[3]);
-		
+		}	
 	}
 	
 	/**
-	 * this function detects where a bricks will be genereated and puts the id into the brick_array
-	 * @return {Bool}  true for a bricks/false for none
+	 * this function fills the brick_array with 4 (multible times till destroy), 2 for (direct distroyable brick)
+	 * @return {Bool}  true for bricks (entity gets generated) / false for none
 	 */
 	function generateBricks (i, j) {
-		if(i > 0 && i < 18 && j > 0 && j < 14 && Crafty.randRange(0, 50) > 40 && !(i == 1 && j == 1) && !(i == 1 && j == 2)
-			&& !(i == 1 && j == 3) && !(i == 1 && j == 4) && !(i == 2 && j == 1) && !(i == 3 && j == 2) && !(i == 4 && j == 1)
-		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)){
+		if ( Crafty.randRange(0, 50) > 40  &&  checkPositionForBricks(i, j) ) {
 			//fill Array, return true
 			if (Crafty.randRange(0, 50) > 45) {
 				brick_array[i][j] = 4;
@@ -347,26 +403,31 @@ function startGame(gameState, main) {//gameState
 	function checkForGoody(x, y, self) {
 		switch (brick_array[x][y]) {
 			case 10: // Speedup
+				itemSpeedUp.play();
 				self.attr({speed: self.speed+1.0});
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");
 				break;
 			case 11: //Bombup
+				bingo.play();
 				self.attr({maxBombs: self.maxBombs+1.0});
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");
 				break;
 			case 12: //Fireup
+				bingo.play();
 				self.attr({fireRange: self.fireRange+1.0});
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");
 				break;
 			case 13: //Timefuze
+				ohlala.play();
 				self.attr({timeFuze: true});
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");
 				break;
 			case 14: //DeathSkull
+				scream.play();
 				self.xDeath = goody_array[x][y].x;
 				self.yDeath = goody_array[x][y].y;
 				self.trigger("explode");
@@ -379,6 +440,7 @@ function startGame(gameState, main) {//gameState
 				goody_array[x][y].trigger("explode");
 				break;
 			case 16: //Invincible
+				ohlala.play();
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");	
 				self.invincible = true;
@@ -386,9 +448,11 @@ function startGame(gameState, main) {//gameState
 				self.setInvincibleAnimation(self.PLAYER);
 				break;
 			case 17: //Money
+				cash.play();
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");	
 				self.money +=1 ;
+				gameState[self.PLAYER_NUMBER-1].money +=1;
 			default:
 				break;
 		}
@@ -602,9 +666,9 @@ function startGame(gameState, main) {//gameState
 			self.addComponent("Invincible");
 			self.setInvincibleAnimation(self.PLAYER);
 			var PLAYERCORD = getPlayerCord(self.PLAYER)+88;
-			self.animate("walk_down_"+self.PLAYER, [[0,PLAYERCORD]]);
+			self.animate("stay_down_"+self.PLAYER, [[0,PLAYERCORD]]);
 			
-			self.stop().animate("walk_down_"+self.PLAYER, 6);
+			self.stop().animate("stay_down_"+self.PLAYER, 6);
 		}, 1);
 	}
 	/**
@@ -666,7 +730,7 @@ function startGame(gameState, main) {//gameState
 	
 	Crafty.scene("main", function() {
 		generateWorld();
-
+		bgmusic.play();
 		/**
 		 * Component Explode
 		 * sets fire entities
@@ -791,7 +855,7 @@ function startGame(gameState, main) {//gameState
 				})
 				.delay(function() {
 					if(Crafty.randRange(0, 50) > 25){
-						switch (/*parseInt(getRandom(7))*/3) {
+						switch (/*parseInt(getRandom(7))*/7) {
 							case 0:
 								generateGoody("speed_up", x, y, 10);
 								break;
@@ -1002,6 +1066,7 @@ function startGame(gameState, main) {//gameState
 																	this.destroy();
 																});
 										setTimeout(function(){
+												exp.play();
 												brick_array[xGrid/32][yGrid/32] = 0;
 												bomb_array[xGrid/32][yGrid/32].trigger("explode");
 							                }, this.timeTillExplode * 1000);	
@@ -1153,19 +1218,23 @@ function startGame(gameState, main) {//gameState
 			}
 		});	
 		
-		
 		/**Set TimeoutFunction
 		*@author Sergej
 		*/
 		setTimeout(function() { 
-			//backgroundAlarm(startcolor);
-			//startShrinking();
-			//alarm.play();
-		}, 3000); //Time passing after starting game before Alarm starts (in milli seconds)
+			if(STATUS){
+				backgroundAlarm(startcolor);
+				setTimeout(function(){
+					startShrinking();
+				}, 5000);
+				//alarm.play();
+			}
+		}, 60000); //Time passing after starting game before Alarm starts (in milli seconds)
 
 		/**
 		 * Generates an instances of players
 		 */
+		
 		for (var i=0; i < gameState.length; i++) {
 
 			Crafty.c('Gamelogic'+i, new Gamelogic(i+1));
