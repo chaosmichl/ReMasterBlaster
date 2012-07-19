@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script type="text/javascript" src="crafty.js"></script>
+    <title>My Crafty Game</title>
+    <style>
+	@font-face { font-family: "Amiga"; src: url('amiga4ever.ttf') format("truetype");}
+    body, html { margin:0; padding: 0; overflow:hidden;font-family: "Amiga"; font-size:1.0em; text-transform: uppercase; background-color:black;}
+    #cr-stage {border:2px solid white; margin:5px auto; background-color:black; color:black; display:block;}
+	#myCanvas {margin: 5px auto; height:480px; width:608px; border:2px solid white; color: blue; background: black; position:relative;display:block;}
+    </style>
+</head>
+<body>
+	<script src="jquery.min.js"></script>
+	<script src="game.js"></script>
+	<script src="sprites.js"></script>
+	<script src="gui.js"></script>
+	<div id = "myCanvas">
+		<canvas id="canv" width="608" height="480"></canvas>
+	</div>
+	<script>	
+		$(document).ready(function(){
+			function load (urls, callback) {
+				var loaded = 0;
+				images = [];
+				for (i in urls) {
+					images[i] = new Image ();
+					images[i].onload = function () {
+						if (++loaded == urls.length)
+							callback (images);
+						};
+						images[i].src = urls[i];
+				}
+			}
+			
+			load (["img/sprites.png", "img/sprite_players.png", "img/logo.png", "img/credits.png"], whendone);
+			function whendone (imgs) {
+				generateUi(imgs);
+			}
+		});
+	</script>
+</body>
+</html>

@@ -1,7 +1,6 @@
-function generateUi(playerObj, config)
+function generateUi(imgs)
 {
 	var that = this;
-	
 	var refPlayerObj=[
 		{username:"POLICEMAN", spriteposition: 0,controls:{left:65,right:68,up:87,down:83,bomb:32},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
 		{username:"DUKE", spriteposition: 1,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
@@ -27,7 +26,11 @@ function generateUi(playerObj, config)
 			{name:"DETECTIVE",taken:false,sx:0,sy:264,sw:32,sh:44},
 			{name:"GREEN",taken:false,sx:0,sy:396,sw:32,sh:44},
 			{name:"CHINESE",taken:false,sx:0,sy:528,sw:32,sh:44},
-			{name:"MICHA",taken:false,sx:0,sy:660,sw:32,sh:44}
+			{name:"MICHA",taken:false,sx:0,sy:660,sw:32,sh:44},
+			{name:"MAX",taken:false,sx:0,sy:792,sw:32,sh:44},
+			{name:"SEBASTIAN",taken:false,sx:0,sy:924,sw:32,sh:44},
+			{name:"SERGEJ",taken:false,sx:0,sy:1056,sw:32,sh:44},
+			{name:"PAVLINA",taken:false,sx:0,sy:1188,sw:32,sh:44}
 		],
 		"environmentExtras":[
 			{name:"throphy",sx:64,sy:224,sw:32,sh:32},
@@ -40,25 +43,19 @@ function generateUi(playerObj, config)
 			{name:"PROTECTION",sx:0,sy:192,sw:32,sh:32,prize:3,extrasname:"invinsible"},
 			{name:"SPEED-UP",sx:0,sy:160,sw:32,sh:32,prize:4,extrasname:"speed"}
 		]
-			};
+	};
 			
 	var size_x=608;
 	var size_y=480;
 	scene="";
 	var cntdown=3;
 	
-	var extras=new Image();
-	extras.src="img/sprites.png";
-			
-	var players=new Image();
-	players.src="img/sprite_players.png";
-				
-	var startScreen=new Image();
-	startScreen.src="img/logo.png";
-
-	var creditsScreen=new Image();
-	creditsScreen.src="img/credits.png";
-			
+	
+	var extras=imgs[0];
+	var players=imgs[1];				
+	var startScreen=imgs[2];
+	var creditsScreen=imgs[3];
+	
 	var active_position=0;
 	var playerArray_position=0;
 	var active_player=0;
@@ -67,10 +64,13 @@ function generateUi(playerObj, config)
 	var ctx = canv.getContext ("2d");
 	ctx.font = "15px Amiga";
 	
+	var cash = new Audio("sounds/cash.mp3");
+	var burp = new Audio("sounds/burp.mp3");
+	
 	function generatePlayerobj(x)
 	{
 		for (var i=0; i<x; i++){
-			playerObj[i]=refPlayerObj[i];
+			playerObj[i]= jQuery.extend(true,{}, refPlayerObj[i]);
 			config.player[playerObj[i].spriteposition].taken = true;
 		}
 	}
@@ -102,6 +102,11 @@ function generateUi(playerObj, config)
 		for (var i=0;i<playerObj.length;i++){
 			playerObj[i].wins=0;
 			playerObj[i].money=0;
+			playerObj[i].maxBombs=1;
+			playerObj[i].fireRange=2;
+			playerObj[i].timebomb=false;
+			playerObj[i].speed=1.5;
+			playerObj[i].invinsible=false;
 		}
 	}
 	
@@ -138,6 +143,13 @@ function generateUi(playerObj, config)
 		for (var i=0; i< playerObj.length; i++){
 			playerObj[i].wins = myGameState[i].wins;
 			playerObj[i].money = myGameState[i].money;
+			//console.log ("playerObj[i]",playerObj[i]);
+			//console.log ("refPlayerObj[i]",refPlayerObj[i]);
+			playerObj[i].maxBombs=refPlayerObj[i].maxBombs;
+			playerObj[i].fireRange=refPlayerObj[i].fireRange;
+			playerObj[i].timebomb=refPlayerObj[i].timebomb;
+			playerObj[i].speed=refPlayerObj[i].speed;
+			playerObj[i].invinsible=refPlayerObj[i].invinsible;
 		}
 		draw("hallOfFame");
 	};
@@ -205,17 +217,17 @@ function generateUi(playerObj, config)
 			ctx.clearRect (0, 0, canv.width, canv.height);	
 			for(var i=0;i<config.menu.length; i++){
 				if (y_line == 1){
-					ctx.fillStyle = "#15527c";
+					ctx.fillStyle = "blue";
 					ctx.fillText ("MAIN MENU", 220, 35*y_line);
 					y_line++;
 					ctx.fillText ("---------", 220, 35*y_line);			
 					y_line++;
 				}
 				if (active_position===i){
-					ctx.fillStyle = "blue";
+					ctx.fillStyle = "red";
 					ctx.fillText (" > ", 70, 35*y_line);
 				};
-				ctx.fillStyle = "#15527c";
+				ctx.fillStyle = "blue";
 				ctx.fillText (config.menu[i].text, 120, 35*y_line); 	
 				ctx.fillText (": " + config.menu[i].value, 380, 35*y_line); 
 				y_line++;
@@ -228,16 +240,17 @@ function generateUi(playerObj, config)
 					
 			for(var i=0;i<playerObj.length; i++){
 				if (y_line == 1){
+					ctx.fillStyle = "blue";
 					ctx.fillText ("CHOOSE PLAYER", 200, 35*y_line);
 					y_line++;
 					ctx.fillText ("---------", 230, 35*y_line);			
 					y_line++;
 				}
 				if (active_position===i){
-					ctx.fillStyle = "blue";
+					ctx.fillStyle = "red";
 					ctx.fillText (" > ", 70, 45*y_line);
 				};
-				ctx.fillStyle = "#15527c";
+				ctx.fillStyle = "blue";
 				ctx.fillText ("PLAYER " + (i+1), 120, 45*y_line);
 				//ctx.fillText (": ", 300, 45*y_line);
 				for(var k=0; k<config.player.length; k++){
@@ -273,6 +286,7 @@ function generateUi(playerObj, config)
 					
 			for(var i=0;i<playerObj.length; i++){
 				if (y_line == 1){
+					ctx.fillStyle = "blue";
 					ctx.fillText ("HALL OF FAME", 200, 35*y_line);
 					y_line++;
 					ctx.fillText ("---------", 220, 35*y_line);
@@ -419,29 +433,32 @@ function generateUi(playerObj, config)
 				if (active_position<config.buyableExtras.length){
 					if (playerObj[active_player].money >= config.buyableExtras[active_position].prize){
 						playerObj[active_player].money = playerObj[active_player].money - config.buyableExtras[active_position].prize;
-								
+						cash.play();
 						if (config.buyableExtras[active_position].name==="EXTRA BOMB"){
 							playerObj[active_player].maxBombs++;
 						}
-						if (config.buyableExtras[active_position].name==="POWER-UP"){
+						else if (config.buyableExtras[active_position].name==="POWER-UP"){
 							playerObj[active_player].fireRange++;
 						}
-						if (config.buyableExtras[active_position].name==="TIMEBOMB"){
+						else if (config.buyableExtras[active_position].name==="TIMEBOMB"){
 							playerObj[active_player].timeBomb = true;
 						}
-						if (config.buyableExtras[active_position].name==="POWER-UP"){
+						else if (config.buyableExtras[active_position].name==="POWER-UP"){
 							playerObj[active_player].invinsible = true;
 						}
-						if (config.buyableExtras[active_position].name==="SPEED-UP"){
+						else if (config.buyableExtras[active_position].name==="SPEED-UP"){
 							playerObj[active_player].speed = playerObj[active_player].speed + 0.5;
 						}
 						console.log("geld reicht");
 						//drawShop(active_player);
 					}
-					else if(playerObj[active_player].money === 0){
-						console.log("not enough");
-						//playSound("burb");
-						//active_player++;
+					else {
+						burp.play();
+					}
+					if (playerObj[active_player].money === 0){
+						console.log("geld alle, naechste spieler");
+						active_player++;
+						//drawShop(active_player);
 					}
 				}
 				else{
@@ -457,21 +474,21 @@ function generateUi(playerObj, config)
 					}
 				};
 				//console.log("enter");
-				drawShop(active_player);
+				drawShop(getNextActivePlayer(active_player));
 			}
 			else if (event.which === playerObj[active_player].controls.up){ //up
 				if (active_position >0){
 					active_position--;
 				}
 				console.log("up");
-				drawShop(active_player);
+				drawShop(getNextActivePlayer(active_player));
 			}
 			else if (event.which === playerObj[active_player].controls.down){ //down
 				if (active_position < config.buyableExtras.length){
 					active_position++;
 				}
 				console.log("down");
-				drawShop(active_player);
+				drawShop(getNextActivePlayer(active_player));
 			}
 		}
 	});

@@ -41,8 +41,15 @@ function loadSprites(which) {
 			CHINESE: [0, 528, 32, 44],
 			CHINESE_DEATH: [0, 572, 32, 44],
 			MICHA: [0, 660, 32, 44],
-			MICHA_DEATH: [0, 748, 32, 44]
+			MICHA_DEATH: [0, 748, 32, 44],
+			MAX: [0, 792, 32, 44],
+			MAX_DEATH: [0, 836, 32, 44],
+			SEBASTIAN: [0, 924, 32, 44],
+			SEBASTIAN_DEATH: [0, 968, 32, 44],
+			SERGEJ: [0, 1056, 32, 44],
+			SERGEJ_DEATH: [0, 1100, 32, 44],
+			PAVLINA: [0, 1188, 32, 44],
+			PAVLINA_DEATH: [0, 1232, 32, 44]
 		});
 	}
 }
-

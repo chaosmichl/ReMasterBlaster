@@ -71,7 +71,10 @@ function startGame(gameState, main) {//gameState
 	function checkPositionForBricks(i, j) {
 		if (i > 0 && i < 18 && j > 0 && j < 14 &&  !(i == 1 && j == 1) && !(i == 1 && j == 2)
 			&& !(i == 1 && j == 3) && !(i == 1 && j == 4) && !(i == 2 && j == 1) && !(i == 3 && j == 2) && !(i == 4 && j == 1)
-		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)) {
+		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)
+			&& !(i == 8 && j == 6) && !(i == 8 && j == 7) && !(i == 8 && j == 8) && !(i == 9 && j == 6) 
+			&& !(i == 1 && j == 12) && !(i == 1 && j == 13) && !(i == 2 && j == 13) && !(i == 3 && j == 13)
+			&& !(i == 15 && j == 1) && !(i == 16 && j == 1) && !(i == 17 && j == 1) && !(i == 17 && j == 2)) {
 			return true;
 		} else {
 			return false;
@@ -214,8 +217,27 @@ function startGame(gameState, main) {//gameState
 	/**
 	 * function that releases all sound files and player objects 
 	 */
-	
-	
+	function stopSound () {
+		bgmusic.pause();
+		bgmusic.currentTime = 0;
+		exp.pause();
+		exp.currentTime = 0;
+		scream.pause();
+		scream.currentTime = 0;
+		itemSpeedUp.pause();
+		itemSpeedUp.currentTime = 0;
+		bingo.pause();
+		bingo.currentTime = 0;
+		ohlala.pause();
+		ohlala.currentTime = 0;
+		warp.pause();
+		warp.currentTime = 0;
+		cash.pause();
+		cash.currentTime = 0;
+		alarm.pause();
+		alarm.currentTime = 0;
+		bgmusic = exp = scream = itemSpeedUp = bingo = ohlala = warp = stop = cash = alarm = undefined;
+	}
     /**
      * this function which detects the winner of the round, 
      * gets invoked every time a player gets killed
@@ -231,28 +253,7 @@ function startGame(gameState, main) {//gameState
 					console.log("Winner: " + players[i].PLAYER);
 					gameState[i].wins++;
 					setTimeout(function(){
-						//bgmusic.pause()
-						bgmusic.pause();
-						bgmusic.currentTime = 0;
-						exp.pause();
-						exp.currentTime = 0;
-						scream.pause();
-						scream.currentTime = 0;
-						itemSpeedUp.pause();
-						itemSpeedUp.currentTime = 0;
-						bingo.pause();
-						bingo.currentTime = 0;
-						ohlala.pause();
-						ohlala.currentTime = 0;
-						warp.pause();
-						warp.currentTime = 0;
-						cash.pause();
-						cash.currentTime = 0;
-						alarm.pause();
-						alarm.currentTime = 0;
-						//bgmusic = null;
-						bgmusic = exp = scream = itemSpeedUp = bingo = ohlala = warp = stop = cash = alarm = undefined;
-						
+						stopSound();
 						main.gameFinished(gameState);
 						for (var i=0; i < players.length; i++) {
 							players[i] != undefined;
@@ -285,9 +286,9 @@ function startGame(gameState, main) {//gameState
 	 * @return {Bool}  true for bricks (entity gets generated) / false for none
 	 */
 	function generateBricks (i, j) {
-		if ( Crafty.randRange(0, 50) > 40  &&  checkPositionForBricks(i, j) ) {
+		if ( Crafty.randRange(0, 50) > 5  &&  checkPositionForBricks(i, j) ) {
 			//fill Array, return true
-			if (Crafty.randRange(0, 50) > 45) {
+			if (Crafty.randRange(0, 100) < 12) {
 				brick_array[i][j] = 4;
 			} else {
 				brick_array[i][j] = 2;
@@ -652,18 +653,19 @@ function startGame(gameState, main) {//gameState
 			return 528;			
 		} else if (playerString == "MICHA") {
 			return 660;
-		} else if (playerString == "SERGEJ") {
-			return 792;
-		} else if(playerString == "PAVLINA"){
-			return 924;
 		} else if (playerString == "MAX") {
+			return 792;
+		} else if(playerString == "SEBASTIAN"){
+			return 924;
+		} else if (playerString == "SERGEJ") {
 			return 1056;
-		} else if (playerString == "SEBASTIAN"){
+		} else if (playerString == "PAVLINA"){
 			return 1188;
 		} else {
 			return 2000;
 		}
 	};
+	
 	function makeInvincible(self){
 		setTimeout(function(){
 			self.invincible = true;
@@ -671,7 +673,6 @@ function startGame(gameState, main) {//gameState
 			self.setInvincibleAnimation(self.PLAYER);
 			var PLAYERCORD = getPlayerCord(self.PLAYER)+88;
 			self.animate("stay_down_"+self.PLAYER, [[0,PLAYERCORD]]);
-			
 			self.stop().animate("stay_down_"+self.PLAYER, 6);
 		}, 1);
 	}
@@ -734,7 +735,7 @@ function startGame(gameState, main) {//gameState
 	
 	Crafty.scene("main", function() {
 		generateWorld();
-		bgmusic.play();
+		//bgmusic.play();
 		/**
 		 * Component Explode
 		 * sets fire entities
@@ -858,36 +859,61 @@ function startGame(gameState, main) {//gameState
 					this.animate("burning_brick", 10);
 				})
 				.delay(function() {
-					if(Crafty.randRange(0, 50) > 25){
-						switch (/*parseInt(getRandom(7))*/7) {
-							case 0:
-								generateGoody("speed_up", x, y, 10);
-								break;
-							case 1:
-								generateGoody("bombs_up", x, y, 11);
-								break;
-							case 2:
-								generateGoody("fire_up", x, y, 12);
-								break;	
-							case 3:
-								generateGoody("time_fuze", x, y, 13);
-								break;
-							case 4: 
-								generateGoody("death_skull", x, y, 14);
-								break;
-							case 5: 
-								generateGoody("disease", x, y, 15);
-								break;
-							case 6: 
-								generateGoody("invincible", x, y, 16);
-								break;
-							case 7: 
-								generateGoody("money", x, y, 17);
-								break;	
-							default:
-								break;
-						}
+					var randomValue;
+					randomValue = Crafty.randRange(0, 100);
+					console.log(randomValue);
+					var setter;
+					
+					if (randomValue < 4) {
+						setter = 0;
+					} else if (randomValue >= 4 && randomValue < 14) {
+						setter = 1;
+					} else if (randomValue >= 14 &&  randomValue < 22) {
+						setter = 2;
+					} else if (randomValue >= 22 &&  randomValue < 24) {
+						setter = 3;
+					} else if (randomValue >= 24 &&  randomValue < 31) {
+						setter = 4;
+					} else if (randomValue >= 31 &&  randomValue < 33) {
+						setter = 5;
+					} else if (randomValue >= 33 &&  randomValue < 36) {
+						setter = 6;
+					} else if (randomValue >= 36 &&  randomValue < 38) {
+						setter = 7;
+					} else {
+						
+					}					
+
+					switch (setter) {
+						case 0:
+							generateGoody("speed_up", x, y, 10);
+							break;
+						case 1:
+							generateGoody("bombs_up", x, y, 11);
+							break;
+						case 2:
+							generateGoody("fire_up", x, y, 12);
+							break;	
+						case 3:
+							generateGoody("time_fuze", x, y, 13);
+							break;
+						case 4: 
+							generateGoody("death_skull", x, y, 14);
+							break;
+						case 5: 
+							generateGoody("disease", x, y, 15);
+							break;
+						case 6: 
+							generateGoody("invincible", x, y, 16);
+							break;
+						case 7: 
+							generateGoody("money", x, y, 17);
+							break;	
+						default:
+							break;
 					}
+				
+					
 					this.destroy();
                 }, 500)				
 			}
@@ -903,7 +929,6 @@ function startGame(gameState, main) {//gameState
 					var xDeath, yDeath;
 					var maxBombs, speed, fireRange, timeTillExplode, triggeredBomb, bombsPlanted, PLAYER_NUMBER, money; 
 					var timeFuze, invincible;
-					var triggeredBomb;
 					
 					this.move = {left: false, right: false, up: false, down: false};	
 					this.saveMove = {left: false, right: false, up: false, down: false};
@@ -925,15 +950,8 @@ function startGame(gameState, main) {//gameState
 					this.y = posObj.y;
 					this.z = posObj.z;
 					
-					/*if(gameState) {
-						this.speed = gameState.speed;
-						this.maxBombs = gameState.maxbomben;
-						var PLAYER = gameState.username;
-						this.PLAYER = PLAYER;
-						this.money = gameState.money;
-					}*/
-					
 					if(gameState) {			
+						console.log(gameState.timebomb);
 						this.speed = gameState.speed;
 						this.maxBombs = gameState.maxBombs;
 						var PLAYER = gameState.username;
@@ -941,12 +959,12 @@ function startGame(gameState, main) {//gameState
 						this.money = gameState.money;
 						this.fireRange = gameState.fireRange;
 						this.speed = gameState.speed;
+						this.triggeredBomb = gameState.timebomb;
 						if(gameState.invinsible){
 							makeInvincible(this);
 						}
 					}
 					
-
 					costumKeys.left = gameState.controls.left;
 					costumKeys.right = gameState.controls.right;
 					costumKeys.up = gameState.controls.up;
@@ -1234,7 +1252,7 @@ function startGame(gameState, main) {//gameState
 				}, 5000);
 				//alarm.play();
 			//}
-		}, 10000); //Time passing after starting game before Alarm starts (in milli seconds)
+		}, 90000); //Time passing after starting game before Alarm starts (in milli seconds)
 
 		/**
 		 * Generates an instances of players
