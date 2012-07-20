@@ -80,7 +80,7 @@ function startGame(gameState, main) {//gameState
 		}
 	}
 	
-	var startcolor = 0;      //The starting RGB Red-Value
+	var startcolor = 0;      //The starting RGB Red -Value
 	var neg = 1;             //Variable to be negated once the Red Value reaches 0 or 255
 
 	/** 
@@ -729,6 +729,7 @@ function startGame(gameState, main) {//gameState
 	});
 	
 
+		
 	//automatically play the loading scene
 	Crafty.scene("loading");
 	
@@ -1241,17 +1242,22 @@ function startGame(gameState, main) {//gameState
 		/**Set TimeoutFunction
 		*@author Sergej
 		*/
-		setTimeout(function() { 
-			//if (PLAYERS_ALIVE<=1) {
-				backgroundAlarm(startcolor);	
-				
-				setTimeout(function(){
-					startShrinking();
-				}, 5000);
-				//alarm.play();
-			//}
-		}, 90000); //Time passing after starting game before Alarm starts (in milli seconds)
-
+		if(STATUS) {		
+			setTimeout(function() { 
+				//if (PLAYERS_ALIVE<=1) {
+				if(STATUS) {	
+					backgroundAlarm(startcolor);	
+					setTimeout(function(){
+						if(STATUS) {	
+							startShrinking();
+						}
+					}, 5000);
+				}
+					//alarm.play();
+				//}
+			}, 90000); //Time passing after starting game before Alarm starts (in milli seconds)
+	
+		}
 		/**
 		 * Generates an instances of players
 		 */
