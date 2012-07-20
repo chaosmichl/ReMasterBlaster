@@ -735,7 +735,7 @@ function startGame(gameState, main) {//gameState
 	
 	Crafty.scene("main", function() {
 		generateWorld();
-		//bgmusic.play();
+		bgmusic.play();
 		/**
 		 * Component Explode
 		 * sets fire entities
@@ -1253,7 +1253,7 @@ function startGame(gameState, main) {//gameState
 						}
 					}, 5000);
 				}
-					//alarm.play();
+					alarm.play();
 				//}
 			}, 90000); //Time passing after starting game before Alarm starts (in milli seconds)
 	
