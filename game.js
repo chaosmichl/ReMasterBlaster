@@ -71,8 +71,7 @@ function startGame(gameState, main) {//gameState
 	function checkPositionForBricks(i, j) {
 		if (i > 0 && i < 18 && j > 0 && j < 14 &&  !(i == 1 && j == 1) && !(i == 1 && j == 2)
 			&& !(i == 1 && j == 3) && !(i == 1 && j == 4) && !(i == 2 && j == 1) && !(i == 3 && j == 2) && !(i == 4 && j == 1)
-		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)
-			&& !(i == 8 && j == 6) && !(i == 8 && j == 7) && !(i == 8 && j == 8) && !(i == 9 && j == 6) 
+		    && !(i == 17 && j == 13) && !(i == 16 && j == 13) && !(i == 15 && j == 13) && !(i == 17 && j == 12) && !(i == 17 && j == 11)			&& !(i == 8 && j == 6) && !(i == 8 && j == 7) && !(i == 8 && j == 8) && !(i == 9 && j == 6) 
 			&& !(i == 1 && j == 12) && !(i == 1 && j == 13) && !(i == 2 && j == 13) && !(i == 3 && j == 13)
 			&& !(i == 15 && j == 1) && !(i == 16 && j == 1) && !(i == 17 && j == 1) && !(i == 17 && j == 2)) {
 			return true;
@@ -409,7 +408,7 @@ function startGame(gameState, main) {//gameState
 		switch (brick_array[x][y]) {
 			case 10: // Speedup
 				itemSpeedUp.play();
-				self.attr({speed: self.speed+1.0});
+				self.attr({speed: self.speed+0.7});
 				brick_array[x][y] = 0;
 				goody_array[x][y].trigger("explode");
 				break;
@@ -951,7 +950,6 @@ function startGame(gameState, main) {//gameState
 					this.z = posObj.z;
 					
 					if(gameState) {			
-						console.log(gameState.timebomb);
 						this.speed = gameState.speed;
 						this.maxBombs = gameState.maxBombs;
 						var PLAYER = gameState.username;
@@ -959,7 +957,7 @@ function startGame(gameState, main) {//gameState
 						this.money = gameState.money;
 						this.fireRange = gameState.fireRange;
 						this.speed = gameState.speed;
-						this.triggeredBomb = gameState.timebomb;
+						this.timeFuze = gameState.timebomb;
 						if(gameState.invinsible){
 							makeInvincible(this);
 						}
