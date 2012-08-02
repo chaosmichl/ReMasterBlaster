@@ -65,7 +65,7 @@ function startGame(gameState, main) {//gameState
 	}
 	
 	/**
-	 * this function detects where a bricks will be genereated
+	 * this function detects where a bricks will be genereated in an ugly way
 	 * @return {Bool}  true for a bricks/false for none
 	 */
 	function checkPositionForBricks(i, j) {
@@ -104,7 +104,7 @@ function startGame(gameState, main) {//gameState
 			}
 		}, 100);
 	}
-	function setShrinkingWall (x, y) {
+	function animationBeforeShrinkingWall (x, y) {
 		Crafty.e("2D","DOM","SpriteAnimation", "wall_appear", "animate")
 			.attr({x: x, y: y, z: 101})
 	    	.animate('wall_appear', 0, 8, 4)
@@ -164,7 +164,7 @@ function startGame(gameState, main) {//gameState
 						}
 					}
 				}
-				setShrinkingWall(x, y);
+				animationBeforeShrinkingWall(x, y);
 			
 				if (wallsLeft >= 0) {
 		       		this.addComponent("2D","DOM", "wall")
@@ -572,24 +572,7 @@ function startGame(gameState, main) {//gameState
 		return Crafty.randRange(0, max);
 	};
 	
-	/**
-	 * funtion generates a new goody entity
-	 * sets the typeNumber in the brick_array 
-	 * @param {String} type defines the goody type
-	 * @param {Number} x position of the player
-	 * @param {Number} y position of the player
-	 * @param {Number} typeNumber id for the goodytype
-	 */
-	function generateGoody (type, x, y, typeNumber) {
-		var goodyType = type;
-		brick_array[x/32][y/32] = typeNumber;
-		goody_array[x/32][y/32] = Crafty.e("2D", "DOM", goodyType, "explodable")
-			.attr({x: x, y: y, z: 9})
-			.bind('explode', function() {
-            	this.destroy();
-        	});
-	};
-	
+
 	/**
 	 * function which remevoes the invincible form the player
 	 * @param {Object} self reference to the player
@@ -638,7 +621,11 @@ function startGame(gameState, main) {//gameState
 	}
 	
 	
-
+	/**
+	 * function that returns the y coordinate of the player in the spirtemap
+	 * @param playerString The name of the player/sprite
+	 * @return y Koordinate in spritemap 
+	 */
 	function getPlayerCord(playerString) {
 		if (playerString == "POLICEMAN") {
 			return 0;
@@ -665,6 +652,36 @@ function startGame(gameState, main) {//gameState
 		}
 	};
 	
+	/**
+	 * function that set starts the fire for each direction
+	 * @param {Number} x position of the player
+	 * @param {Number} y position of the player
+	 * @param {Object} reference to the invocing player
+	 */
+	function bombExplosion (x, y, self) {
+			self.bombsPlanted -= 1;
+			Crafty.e("SetFire")
+				.setFire(x, y, 0, 0, self, 0);
+			setTimeout(function(){
+				//fire left 
+				Crafty.e("SetFire")
+					.setFire(x, y, -1, 0, self, self.fireRange-1);
+				//fire right 	
+				Crafty.e("SetFire")
+					.setFire(x, y, 1, 0, self, self.fireRange-1);
+				//fire up
+				Crafty.e("SetFire")
+					.setFire(x, y, 0, -1, self, self.fireRange-1);
+				//fire down
+				Crafty.e("SetFire")
+					.setFire(x, y, 0, 1, self, self.fireRange-1);
+			}, 100);
+	};
+	
+	/**
+	 * function that makes the calling player invincible
+	 * @param {Object} reference to the invocing player
+	 */
 	function makeInvincible(self){
 		setTimeout(function(){
 			self.invincible = true;
@@ -675,6 +692,88 @@ function startGame(gameState, main) {//gameState
 			self.stop().animate("stay_down_"+self.PLAYER, 6);
 		}, 1);
 	}
+	
+	
+	
+	/**
+	 * function that randomly decides if a goody should be generated or not
+	 * @param {Number} x position of the player
+	 * @param {Number} y position of the player
+	 */
+	function rollTheDiceForGoody (x, y) {
+		var randomValue;
+		randomValue = Crafty.randRange(0, 100);
+		var setter;
+		
+		if (randomValue < 4) {
+			setter = 0;
+		} else if (randomValue >= 4 && randomValue < 14) {
+			setter = 1;
+		} else if (randomValue >= 14 &&  randomValue < 22) {
+			setter = 2;
+		} else if (randomValue >= 22 &&  randomValue < 24) {
+			setter = 3;
+		} else if (randomValue >= 24 &&  randomValue < 31) {
+			setter = 4;
+		} else if (randomValue >= 31 &&  randomValue < 33) {
+			setter = 5;
+		} else if (randomValue >= 33 &&  randomValue < 36) {
+			setter = 6;
+		} else if (randomValue >= 36 &&  randomValue < 38) {
+			setter = 7;
+		} else {
+			
+		}					
+
+		switch (setter) {
+			case 0:
+				generateGoody("speed_up", x, y, 10);
+				break;
+			case 1:
+				generateGoody("bombs_up", x, y, 11);
+				break;
+			case 2:
+				generateGoody("fire_up", x, y, 12);
+				break;	
+			case 3:
+				generateGoody("time_fuze", x, y, 13);
+				break;
+			case 4: 
+				generateGoody("death_skull", x, y, 14);
+				break;
+			case 5: 
+				generateGoody("disease", x, y, 15);
+				break;
+			case 6: 
+				generateGoody("invincible", x, y, 16);
+				break;
+			case 7: 
+				generateGoody("money", x, y, 17);
+				break;	
+			default:
+				break;
+		}	
+	}
+	
+	/**
+	 * funtion generates a new goody entity
+	 * sets the typeNumber in the brick_array 
+	 * @param {String} type defines the goody type
+	 * @param {Number} x position of the player
+	 * @param {Number} y position of the player
+	 * @param {Number} typeNumber id for the goodytype
+	 */
+	function generateGoody (type, x, y, typeNumber) {
+		var goodyType = type;
+		brick_array[x/32][y/32] = typeNumber;
+		goody_array[x/32][y/32] = Crafty.e("2D", "DOM", goodyType, "explodable")
+			.attr({x: x, y: y, z: 9})
+			.bind('explode', function() {
+            	this.destroy();
+        	});
+	};
+	
+	
 	/**
 	 * function generates the world
 	 * generates the wall and brick entities
@@ -736,33 +835,7 @@ function startGame(gameState, main) {//gameState
 	Crafty.scene("main", function() {
 		generateWorld();
 		bgmusic.play();
-		/**
-		 * Component Explode
-		 * sets fire entities
-		 */
-		Crafty.c("Explode", {
-			Explode: function (x, y, self) {
-				self.bombsPlanted -= 1;
-				Crafty.e("SetFire")
-					.setFire(x, y, 0, 0, self, 0);
-				this.delay(function() {
-						//fire left 
-						Crafty.e("SetFire")
-							.setFire(x, y, -1, 0, self, self.fireRange-1);
-						//fire right 	
-						Crafty.e("SetFire")
-							.setFire(x, y, 1, 0, self, self.fireRange-1);
-						//fire up
-						Crafty.e("SetFire")
-							.setFire(x, y, 0, -1, self, self.fireRange-1);
-						//fire down
-						Crafty.e("SetFire")
-							.setFire(x, y, 0, 1, self, self.fireRange-1);
-				}, 100);
-			}   
-		});
 		
-
 		/**
 		 * Component SetFire
 		 * Sets a fire and checks for players, goodys and bricks underneath
@@ -859,72 +932,20 @@ function startGame(gameState, main) {//gameState
 					this.animate("burning_brick", 10);
 				})
 				.delay(function() {
-					var randomValue;
-					randomValue = Crafty.randRange(0, 100);
-					console.log(randomValue);
-					var setter;
-					
-					if (randomValue < 4) {
-						setter = 0;
-					} else if (randomValue >= 4 && randomValue < 14) {
-						setter = 1;
-					} else if (randomValue >= 14 &&  randomValue < 22) {
-						setter = 2;
-					} else if (randomValue >= 22 &&  randomValue < 24) {
-						setter = 3;
-					} else if (randomValue >= 24 &&  randomValue < 31) {
-						setter = 4;
-					} else if (randomValue >= 31 &&  randomValue < 33) {
-						setter = 5;
-					} else if (randomValue >= 33 &&  randomValue < 36) {
-						setter = 6;
-					} else if (randomValue >= 36 &&  randomValue < 38) {
-						setter = 7;
-					} else {
-						
-					}					
-
-					switch (setter) {
-						case 0:
-							generateGoody("speed_up", x, y, 10);
-							break;
-						case 1:
-							generateGoody("bombs_up", x, y, 11);
-							break;
-						case 2:
-							generateGoody("fire_up", x, y, 12);
-							break;	
-						case 3:
-							generateGoody("time_fuze", x, y, 13);
-							break;
-						case 4: 
-							generateGoody("death_skull", x, y, 14);
-							break;
-						case 5: 
-							generateGoody("disease", x, y, 15);
-							break;
-						case 6: 
-							generateGoody("invincible", x, y, 16);
-							break;
-						case 7: 
-							generateGoody("money", x, y, 17);
-							break;	
-						default:
-							break;
-					}
-				
-					
+					rollTheDiceForGoody(x, y);
 					this.destroy();
                 }, 500)				
 			}
 		});
 		
-		
+		/**
+		 * Constructor Function Gamelogic
+		 * handles most of the player relatetet events
+		 */
 		var Gamelogic = function (pn){
 			{
 				this.gamelogic = function(gameState) {
 					var move = {left: false, right: false, up: false, down: false};	
-					var saveMove = {left: false, right: false, up: false, down: false};
 					var costumKeys = {left: 0, right: 0, up: 0, down: 0};
 					var xDeath, yDeath;
 					var maxBombs, speed, fireRange, timeTillExplode, triggeredBomb, bombsPlanted, PLAYER_NUMBER, money; 
@@ -1002,7 +1023,6 @@ function startGame(gameState, main) {//gameState
 								var r = yPlayerRelocator(this.y+12);
 								this.y = r;
 								this.x += this.speed;
-								saveMove.right = true;
 							}
 						}
 						else if (move.left) {
@@ -1013,7 +1033,6 @@ function startGame(gameState, main) {//gameState
 								var r = yPlayerRelocator(this.y+12);
 								this.y = r;
 								this.x -= this.speed; 
-								saveMove.left = true;
 							}
 						}
 						else if (move.up) {
@@ -1024,7 +1043,6 @@ function startGame(gameState, main) {//gameState
 								var r = xPlayerRelocator (this.x);
 								this.x = r;
 								this.y -= this.speed;
-								saveMove.up = true;
 							}
 						}
 						else if (move.down) {
@@ -1034,39 +1052,22 @@ function startGame(gameState, main) {//gameState
 								var r = xPlayerRelocator (this.x);
 								this.x = r;
 								this.y += this.speed;
-								saveMove.down = true;
 							}
 						}
 					}).bind('keydownself', function(e) {
 						if (e.which === costumKeys.right) {
-							saveMove.right = true;
 							move.right = true;
 						}
 						if (e.which === costumKeys.left) {
-							saveMove.left = true;
 							move.left = true;
 						}
 						if (e.which === costumKeys.up) {
-							saveMove.up = true;
 							move.up = true;
 						}
 						if (e.which === costumKeys.down) {
-							saveMove.down = true;
 							move.down = true;
 						}
 						if (e.which === costumKeys.bomb) {
-							if(saveMove.right){
-								move.right = true;
-							}
-							else if(saveMove.left){
-								move.left = true;
-							}
-							else if(saveMove.up){
-								move.up = true;
-							}
-							else if(saveMove.down){
-								move.down = true;
-							}
 							var xGrid = xRelocator (this.x);
 							var yGrid = yRelocator(this.y)+12;
 							if (!this.timeFuze){
@@ -1082,8 +1083,7 @@ function startGame(gameState, main) {//gameState
 																})
 																.bind("explode", function() {
 																	brick_array[xGrid/32][yGrid/32] = 0;
-												                    Crafty.e("Explode")
-																	  .Explode(xGrid, yGrid, self);
+												                    bombExplosion(xGrid, yGrid, self);
 																	this.destroy();
 																});
 										setTimeout(function(){
@@ -1115,21 +1115,18 @@ function startGame(gameState, main) {//gameState
 					}).bind('keyupself', function(e) {
 						if (e.which === costumKeys.right) {
 							move.right = false;
-							saveMove.right = false;
 							this.stop().animate("stay_right_"+PLAYER, 1);
 						}
 						if (e.which === costumKeys.left) {
 							move.left = false;
-							saveMove.left = false;
 							this.stop().animate("stay_left_"+PLAYER, 1);
 						}
 						if (e.which === costumKeys.up){
 							move.up = false;
-							saveMove.up = false;
 							this.stop().animate("stay_up_"+PLAYER, 1);
 						} 
 						if (e.which === costumKeys.down) {
-							move.down = saveMove.down = false;
+							move.down = false;
 							this.stop().animate("stay_down_"+PLAYER, 1);
 						}
 						if (this.timeFuze) {
@@ -1239,9 +1236,9 @@ function startGame(gameState, main) {//gameState
 			}
 		});	
 		
-		/**Set TimeoutFunction
-		*@author Sergej
-		*/
+		/**
+		 * starts shrinking after 90 seconds
+		 */
 		if(STATUS) {		
 			setTimeout(function() { 
 				//if (PLAYERS_ALIVE<=1) {

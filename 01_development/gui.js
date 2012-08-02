@@ -2,7 +2,7 @@ function generateUi(imgs)
 {
 	var that = this;
 	var refPlayerObj=[
-		{username:"POLICEMAN", spriteposition: 0,controls:{left:65,right:68,up:87,down:83,bomb:32},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
+		{username:"POLICEMAN", spriteposition: 0,controls:{left:65,right:68,up:87,down:83,bomb:32},money:3,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
 		{username:"DUKE", spriteposition: 1,controls:{left:37,right:39,up:38,down:40,bomb:13},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
 		{username:"DETECTIVE", spriteposition: 2,controls:{left:49,right:51,up:52,down:50,bomb:53},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
 		{username:"GREEN", spriteposition: 3,controls:{left:54,right:56,up:57,down:55,bomb:48},money:0,maxBombs:1,fireRange:2,timebomb:false,speed:1.5,invinsible:false,wins:0},
@@ -39,7 +39,7 @@ function generateUi(imgs)
 		"buyableExtras":[
 			{name:"EXTRA BOMB",sx:32,sy:160,sw:32,sh:32,prize:1,extrasname:"maxBombs"}, 
 			{name:"POWER-UP",sx:64,sy:160,sw:32,sh:32,prize:1,extrasname:"fireRange"},
-			{name:"TIMEBOMB",sx:96,sy:160,sw:32,sh:32,prize:3,extrasname:"timeBomb"},
+			{name:"TIMEBOMB",sx:96,sy:160,sw:32,sh:32,prize:3,extrasname:"timebomb"},
 			{name:"PROTECTION",sx:0,sy:192,sw:32,sh:32,prize:3,extrasname:"invinsible"},
 			{name:"SPEED-UP",sx:0,sy:160,sw:32,sh:32,prize:4,extrasname:"speed"}
 		]
@@ -275,6 +275,7 @@ function generateUi(imgs)
 			$("#myCanvas").css("display","none");
 			scene="game";
 			var myGameObj = jQuery.extend(true,[], playerObj);
+			console.log(myGameObj);
 			startGame(myGameObj, that);
 			//sprites for players
 		}
@@ -441,9 +442,10 @@ function generateUi(imgs)
 							playerObj[active_player].fireRange++;
 						}
 						else if (config.buyableExtras[active_position].name==="TIMEBOMB"){
-							playerObj[active_player].timeBomb = true;
+							playerObj[active_player].timebomb = true;
+							console.log(playerObj[active_player].timebomb);
 						}
-						else if (config.buyableExtras[active_position].name==="POWER-UP"){
+						else if (config.buyableExtras[active_position].name==="PROTECTION"){
 							playerObj[active_player].invinsible = true;
 						}
 						else if (config.buyableExtras[active_position].name==="SPEED-UP"){
