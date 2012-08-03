@@ -17,11 +17,11 @@ Folder structure on our github repository:
 	------------
 	First testbench where we tested the Crafty Sprite Engine.
 	
-	01_testenvironment
+	02_testenvironment
 	------------
 	First test environment with 2 playable Players.
 	
-	01_final
+	03_final
 	------------
 	Our FINAL result!
 
@@ -45,7 +45,7 @@ Folder structure on our github repository:
 	------------
 	Here you can find the timeline of the project.
 	
-	03_documentation
+	04_documentation
 	------------
 		
 		01_prsta
