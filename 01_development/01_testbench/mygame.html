@@ -1,0 +1,62 @@
+<head>
+    <script type="text/javascript" src="crafty.js"></script>
+    <title>My Crafty Game</title>
+    <style>
+    body, html { margin:0; padding: 0; overflow:hidden; font-family:Arial; font-size:20px }
+    #cr-stage { border:2px solid black; margin:5px auto; color:white }
+    </style>
+</head>
+<body>
+	<script>
+		window.onload = function () {
+			//start crafty
+			Crafty.init(400, 336);
+			//Crafty.canvas();
+			
+			//turn the sprite map into usable components
+			Crafty.sprite(16, "sprites.png", {
+				player: [0, 3]
+			});
+
+			//method to generate the map
+			function generateWorld() {
+				//loop through all tiles
+				for (var i = 0; i < 25; i++) {
+					for (var j = 0; j < 21; j++) {
+						//place grass on all tiles
+						//grassType = Crafty.math.randomInt(1, 4);
+						var f = Crafty.e("2D, DOM, player, solid, SpriteAnimation")
+							.attr({ x: i * 16, y: j * 16, z: 1000 })
+							.animate("walk", 0, 3, 5)
+							.animate('walk', 60, -1);
+						//Crafty.e("2D, DOM, grass" + grassType)
+						//	.attr({ x: i * 16, y: j * 16, z:1 });
+						
+					};
+				};
+			};	
+			
+			//the loading screen that will display while our assets load
+			Crafty.scene("loading", function () {
+				//load takes an array of assets and a callback when complete
+				Crafty.load(["sprite.png"], function () {
+					Crafty.scene("main"); //when everything is loaded, run the main scene
+				});
+
+				//black background with some loading text
+				Crafty.background("#000");
+				Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 150, y: 120 })
+						.text("Loading")
+						.css({ "text-align": "center" });
+			});
+
+			//automatically play the loading scene
+			Crafty.scene("loading");
+			Crafty.scene("main", function () {
+				generateWorld();
+
+			});
+		};
+	</script>
+</body>
+</html>

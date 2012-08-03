@@ -2,7 +2,7 @@
 <head>
     <title>My Crafty Game</title>
     <style>
-	@font-face { font-family: "Amiga"; src: url('amiga4ever.ttf') format("truetype");}
+	@font-face { font-family: "Amiga"; src: url('font/amiga4ever.ttf') format("truetype");}
     body, html { margin:0; padding: 0; overflow:hidden;font-family: "Amiga"; font-size:1.0em; text-transform: uppercase; background-color:black;}
     #cr-stage {border:2px solid white; margin:5px auto; background-color:black; color:black; display:block;}
 	#myCanvas {margin: 5px auto; height:480px; width:608px; border:2px solid white; color: blue; background: black; position:relative;display:block;}
@@ -11,9 +11,9 @@
 <body>
 	<script type="text/javascript" src="libs/crafty.js"></script>
 	<script src="libs/jquery.min.js"></script>
-	<script src="game.js"></script>
-	<script src="sprites.js"></script>
-	<script src="gui.js"></script>
+	<script src="code/game.js"></script>
+	<script src="code/sprites.js"></script>
+	<script src="code/gui.js"></script>
 	<div id = "myCanvas">
 		<canvas id="canv" width="608" height="480"></canvas>
 	</div>

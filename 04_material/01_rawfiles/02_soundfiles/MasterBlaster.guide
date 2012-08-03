@@ -1,0 +1,485 @@
+@DATABASE "MasterBlaster V2.21 documentation"
+
+@NODE MAIN "MasterBlaster V2.21 documentation"
+
+                               @{b}MasterBlaster@{ub}
+                              -=============-
+
+                         Version V2.21 (10.11.1995)
+
+                 (C) Copyright 1994/95 by Alexander Ivanof
+
+                             @{" neXus software " Link 11.}
+
+                               - Shareware -
+
+                           @{" System Requirements " Link 13.}
+                              @{" Installation " Link 3.}
+                        @{" Copyright & Distribution " Link 4.}
+
+                         * @{" Whats it all about? " Link 5.} *
+                            * @{" Title Screen " Link 6.} *
+                              * @{" The game " Link 7.} *
+
+                                 @{" History " Link his}
+
+                     @{" How to built a 4-player-adapter " Link 8.}
+
+                             @{" How to register " Link 9.}
+                        @{" How to contact the author " Link 10.}
+
+                                 @{" Credits " Link 12.}
+
+@ENDNODE
+
+@NODE 3. "Installation"
+
+ Just copy the whole MasterBlaster directory to disk/HD. No assigns
+ necessary.
+
+@ENDNODE
+
+@NODE 4. "Copyright & Distribution"
+
+ @{" COPYRIGHT " Link 4.1.}
+
+ @{" DISTRIBUTION " Link 4.2.}
+
+ @{" DISCLAIMER " Link 4.3.}
+
+ @{" SHAREWARE " Link 4.4.}
+
+@ENDNODE
+
+@NODE 4.1. "COPYRIGHT"
+
+ MasterBlaster is copyrighted (C) 1994/95 by Alexander Ivanof. That means
+ that you are NOT ALLOWED to modify the programs and documentations in any
+ way. Especially you MUST NOT REMOVE the documentation or any other file.
+
+ You are NOT allowed to use this software or any part of it for any other
+ purpose than that one mentioned in this documentation, this also includes 
+ any images and samples.
+
+ MasterBlaster is @{"SHAREWARE" Link 4.4.}!
+
+@ENDNODE
+
+@NODE 4.2. "DISTRIBUTION"
+
+ The unregistered MasterBlaster package is freely distributable. That means
+ you are allowed to re-distribute this package as long as you follow these
+ points:
+
+ - Any re-distribution has to include all files in this archive, without any
+   modifications. You are NOT allowed to add or remove any files to/from the
+   archive.
+
+ - This package may be freely distributed via BBSs, InterNet/UseNet, software
+   libraries such as Fred Fish's and Aminet CD-ROM, and other similar
+   electronic channels. You MUST NOT include it on any disk that is selled for
+   more than 5 US Dollar (or an equivalent in other currencies).
+
+ - Disk magazines and services that charge extra for file transfers may NOT
+   distribute it without written permission by Alexander Ivanof!
+   See @{"How to contact the author" Link 10.}.
+
+ You are NOT allowed to distribute you registration code or the
+ registrationfile in any way! It contains your personal data and may only be
+ used by the user who's name is encrypted into the file.
+
+@ENDNODE
+
+@NODE 4.3. "DISCLAIMER"
+
+ By using this product, you accept the FULL responsibility for any damage or
+ loss that might occur through its use or the inability to use it. The
+ developer of the software can NOT be held responsible.
+
+@ENDNODE
+
+@NODE 4.4. "SHAREWARE"
+
+ This product is SHAREWARE. "Free distributable" only says that you do not have
+ to pay for copying or re-distributing the unregistered version of the
+ program. You are allowed to test this product for 30 days. If you like it and
+ decide to use the product regularly, please read the chapter @{"How to register" Link 9.}
+ and pay the shareware fee.
+
+@ENDNODE
+
+@NODE 5. "Whats it all about?"
+
+ A short introduction to MasterBlaster.
+
+ This game is based on the idea of Dynablaster. You can play with up to 5
+ oponents at the same time. The main goal is to survive and kill all the
+ other enemys.
+
+ You can do this by placing bombs on the ground. They will destroy the
+ brick walls around you and may even release some extras to collect.
+
+ @{" The Title screen " Link 6.}
+
+ @{" The game " Link 7.}
+
+@ENDNODE
+
+@NODE 6. "The Title Screen"
+
+ After starting MasterBlaster the Title Screen apears.
+
+ Here, it is possible for you to configure the game the way you and your
+ friends like it best.
+
+ Note: The unregistered version only supports up to 3 players, most of the
+ other items are disabled.
+
+ Players: Select the number of players.
+ ~~~~~~~
+ Wins: How many rounds you have to win
+ ~~~~
+ Monsters: Select the number of Ghosts that will be in the game with you
+ ~~~~~~~~
+ Timelimit: If you want to play until all but one players are dead
+ ~~~~~~~~~ (whenever that may be), turn this item off.
+
+ Shrinking: If you have set a timelimit, this item will do the following:
+ ~~~~~~~~~ When the time is over, the playfield shrinks, destroying
+ everything that's in it's way.
+
+ Fast-Ignition: This is for the remote controlled bombs. If you turn this
+ ~~~~~~~~~~~~~ switch to on, bombs dropped with a controller will explode
+ immediately. Otherwise, they will react like a normal bomb after being
+ dropped. See @{"The game" Link 7.} for a description of the controller.
+
+ Wheel'o'Fortune: The Wheel'o'Fortune starts after each round and gives a
+ ~~~~~~~~~~~~~~~ randomly selected player a bonus of one coin.
+
+ Shop: Here you can buy extras before the next roud starts if you've got
+ ~~~~ enough cash.
+
+ Mode: There are three modes: With "Normal" the game is like Dynablaster,
+ ~~~~ everybody for himself. With "Team" you can choose if you want to join
+ a team and play together with other players: "Team1" is the normal team
+ mode. You play until all members of one team are dead, each survivor gets
+ a cup. With "Team2" the whole team wins regardless of the number of
+ people left on the playfield. Refer to @{"The game" Link 7.} for a
+ complete description of the Team-mode.
+
+ Level: Decide, how you want the initial Level to look like. "Normal" is
+ ~~~~~ Dynablaster-like with steel-walls every second square and brick
+ walls around them. "Empty" is a Level without steel-walls. "Strange" is a
+ labyrinth.
+
+ Extras: Select the amount of every extra in the game. "auto" will
+ ~~~~~~ automatically adjust the number of extras to the number of players.
+ Note: This is always set to "auto" in the unregistered version.
+
+ Player: The following four items refer to the selected player!
+ ~~~~~~
+ Device: Choose the controlling device for the player. Joystick 1 is the
+ ~~~~~~ normal Joystick port, Joystick 2 is the mouse port. Joystick 3 and
+ 4 refer to the 4 player adapter (see @{"How to built a 4-player adapter" Link 8.}.
+ Keyboard-Rgiht-control works like this: Move the player using the cursor
+ keys and use the right "Shift" or "0" on the numericblock as a firebutton.
+ Keyboard-Left : A / D      - Left / Right
+       W / S       - Up /Down
+       left shift - Button
+
+ Team: If you've turned team mode on, you can select the team to which the
+ ~~~~ player belongs.
+
+ Startmoney: The amount of cash the player has at startup time.
+ ~~~~~~~~~~
+ Hero: Select your favorite game-sprite.
+ ~~~~
+
+
+ Bomb: Start the game.
+  If this button is ghosted and can't be pressed, you have to adjust some
+  of your configurations (maybe a device or a player sprite is used twice).
+
+ Exit: Exit to Workbench
+
+ registered to: After paying the shareware fee, you will receive your
+  registration code. Type this code in the string gadget to unlock your
+  version of MasterBlaster.
+
+ @{"The game" Link 7.}
+
+@ENDNODE
+
+@NODE 7. "The game"
+
+ There will be a small delay in the unregistered version before the game
+ starts.
+
+ You may use the following keys in the game:
+                           ~~~~
+ P - pause the game
+ ESC - quit
+ M - toggle music on/off (sound effects are not affected)
+
+ Team Mode: If you play in team mode, there are some differences to normal
+ ~~~~~~~~~ gameplay:
+ - Your team wins, if all players of the opposite team are killed and at least one of
+ your team is alive.
+ - You can walk over bombs placed by your team.
+   Attention: You can be killed even by your own explosions, so be carefull!
+
+ In the game you can collect different extras:
+
+ Coin : With coins you can buy extras in the shop after the game
+ ~~~~
+ Smiling bomb: Gives you one extra bomb. Also disables the time bomb and
+ ~~~~~~~~~~~~ the remote controlled bomb.
+
+ Smiling flame: Increases the range of your explosions
+ ~~~~~~~~~~~~~
+ Shoe: Makes you run faster
+ ~~~~
+ Clock: This is the time bomb.
+ ~~~~~  With this item, you can drop a bomb by pressing your firebutton and
+ ignit it by releasing the button! You should run away AFTER pressing the
+ button but BEFORE releasing it :-) Of course only one bomb at the time can
+ be controlled this way.
+
+ Remote Control: This is a movable time bomb.
+ ~~~~~~~~~~~~~~ Press the button to release a bomb. With the button
+ pressed, you can now move the bomb with your joystick and ignit it after
+ releasing the button. If you have turned on the item "fast-ignition" in
+ the title menu, the bomb will explode immediately after your released the
+ button. Otherwise it will be droppped like a normal bomb.
+
+ Superman:  With this extra, you can push normal brick walls around
+ ~~~~~~~~ and even crush other players with it.
+
+ Ghost: After collecting this item, there's only one pixel leftan now move
+ ~~~~~ throught everything, including brick walls, bombs, explosions, etc.
+ You will get visible again after you press the firebutton to release a
+ bomb. (Always keep in mind to hold down the button if you've collected a
+ timb bomb before!)
+
+ Ying-Yang: Your player will fade to white. He can now resist one explosion
+ ~~~~~~~~~ or skull.
+
+ Skull: Immediate death!
+ ~~~~~
+ Stop sign: Freeze all other players for a short time.
+ ~~~~~~~~~
+ Questionmark: About 40% of the time, this reveals a coin. Otherwise, there
+ ~~~~~~~~~~~~ are things like extras (speed, ying-yang, etc) and several
+ deseases hidden in the questionmark, simply try and test it!
+
+@ENDNODE
+
+@NODE 8. "How to built a 4-player-adapter"
+
+How to build a 4-player adapter for MasterBlaster:
+
+Joystick #3                parallel Port
+-----------                -------------
+
+   pin 1          ->          pin 6
+
+   pin 2          ->          pin 7
+
+   pin 3          ->          pin 8
+
+   pin 4          ->          pin 9
+
+   pin 5                        -
+
+   pin 6          ->          pin 11/12
+
+   pin 7          ->          +5 V
+
+   pin 8          ->          GND
+
+
+Joystick #4                parallel Port
+-----------                -------------
+
+   pin 1          ->          pin 2
+
+   pin 2          ->          pin 3
+
+   pin 3          ->          pin 4
+
+   pin 4          ->          pin 5
+
+   pin 5                        -
+
+   pin 6          ->          pin 13
+
+   pin 7          ->          +5 V
+
+   pin 8          ->          GND
+
+
+ If you want to find out more about programming a 4-player-adapter, feel
+ free to contact the neXus support center at : Hawk@blanker.ruhr.de
+
+@ENDNODE
+
+@NODE 9. "How to register"
+
+ To register, please send 20 US$ or 25DM to the following address:
+ (NO FOREIGN CHEQUES !!!!!!!!!!!!!!!!!!!!!!!!!!!)
+
+ Alexander Ivanof
+ Am Dorfanger 2
+ D-58644 Iserlohn
+ Germany
+
+ Bank    : Sparkasse Iserlohn 445 500 45
+ Account : Alexander Ivanof 18502872
+
+ Your have to include your full NAME and ADDRESS. If you've got an E-Mail
+ adress, you may specify this as well. Please note if you want to receive
+ your registration code by E-Mail (prefered!).
+
+ Within a week you will receive your registration code. Type this string
+ into the "registered to" gadget in the title screen to unlock your version
+ of MasterBlaster. This will be remembered, so you only have to type in
+ your registration code once. The code will be saved into the file
+ "registrationfile".
+
+ You are not allowed to redistribute either your code or the
+ regsitrationfile in any way!
+
+ If you have other comments, feel free to @{"Contact the author" Link 10.}
+
+@ENDNODE
+
+@NODE 10. "How to contact the author"
+
+ If you have any comments, new ideas or found any bugs, feel free to write.
+ My Address:
+
+    Alexander Ivanof
+    Am Dorfanger 2
+  D-58644 Iserlohn
+    Germany
+
+ E-Mail:
+
+    Armitage@blanker.ruhr.de
+
+ Phone-number:
+
+    02374/70632 (Germany)
+
+    ++49 2374 70632
+
+@ENDNODE
+
+@NODE 11. "neXus software"
+
+ neXus software is delivering high quality shareware products right to your
+ Amiga.
+
+ Other great products of neXus software:
+
+ Diamond Caves V2.3 - the ultimate Boulder Dash clone
+ ~~~~~~~~~~~~~~~~~~
+
+ Diamond Caves features:
+
+ - play old Emerald Mine Levels
+ - new features like switches conveyor belts, etc...
+ - runs in true multitasking
+ - record and replay of previously played Levels
+ - runs on every screenmode (supports gfx-boards!)
+ - written 100% useing OS-routines
+ - playfield-size from 10x10 up to 100x100 squares
+ - 60 Levels in the unregistered version
+ - great Leveleditor in the registered version
+
+ Diamond Caves requires:
+
+   68000
+   1MB chipmem / 1MB fastmem
+   Kickstart 2.0
+   Harddisk
+
+ DiamondCavesV2.1 is Shareware and can be found on AmiNet.
+
+ Contact the author of DiamondCaves at: Hawk@blanker.ruhr.de
+
+@ENDNODE
+
+@NODE 12. "Credits"
+
+ At first, let me appologize to all of you who want MasterBlaster to run on
+ Intuition Screens in Multitasking,with more extras  and so on: I've only got
+ a plain A500 with only 2,5MB of Fast- and 0,5MB of ChipRam so I want the
+ game to run on this configuration.
+
+ Of course, if there will be enough registrations, there will be a REAL
+ MasterBlaster II in the future :-)
+
+ Note: There werde a lot of A1200 users complaining about the keyboard
+ control. This actually seems to be a hardware bug in the A1200 keyboard,
+ because this happens with other programs as well (e.g. Diamond Caves). The
+ A1200 keyboard has severe problems recognizing Space and Cursor-Down
+ together! As a workaround, you may use the Shift key instead of the
+ spacebar.
+
+ Credits must got to:
+   Andreas Ivanof (gfx)
+   Peter Elzner (docfile, programming help, betatesting, gfx)
+   Volker Elzner (betatesting)
+
+ and to all you folks out there who wrote to me
+ (either by E-Mail or Snail-Mail).
+
+@ENDNODE
+
+@NODE 13. "System Requirements"
+
+ MasterBlaster V2.2 needs :
+
+ - a PAL monitor
+ - 0.5 ChipRam / 0.5 FastRam
+ - 68000
+ - Kickstart 1.2
+ - RUN-command
+   (if you are using Kick1.2/1.3)
+ - the original mathtrans.library
+   (can be found on your Workbench disk)
+
+@ENDNODE
+
+@NODE his "History"
+
+ MasterBlaster history:
+
+ V2.0 (02.07.1995)
+   - initial release
+     (major update from V1.01)
+
+ V2.1 (24.07.1995)
+   - added Team mode 2
+   - fixed bug with ghosts
+   - fixed bug with infected dead (!) player
+   - fixed bug with teammode and controller
+   - fixed bug in keyboard handler
+   - improved in-game gfx
+
+ V2.2 (25.08.1995)
+   - completely rewrote keyboard-handling
+   - added a second keyboard player
+   - improved standings
+   - fixed bug with AGA-screenmodes
+   - fixed small bug in player-gfx
+
+
+ V2.21 (25.10.95)
+   - fixed standings in teammode
+   - fixed bug in keyboard handler (again...)
+   - minor bugs fixed
+
+
+@ENDNODE
